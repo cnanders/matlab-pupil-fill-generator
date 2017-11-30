@@ -21,9 +21,6 @@ classdef PupilFillGenerator < mic.Base
         cRASTOR = 'Rastor'
         cSAW = 'Saw'
         cSERPENTINE = 'Serpentine'
-        
-
-
     end
     
     properties
@@ -211,34 +208,11 @@ classdef PupilFillGenerator < mic.Base
             
             this.init();
         end
+            
          
-        % Write dTime, i32X, and i32Y to a CSV
-        function csv(this)
-            m = [this.dTime' this.i32X' this.i32Y'];
-            csvwrite('data.csv', m);
-        end
         
-        % Write x, y values (mrad) to text file
-        % @param {char 1xm} c - extra to append to filename
-        function dlm(this, c)
-                        
-            x = this.dVx ; % values in [-1 : 1]
-            y = this.dVy ; % values in [-1 : 1]
-            
-            x = x * 3;
-            y = y * 3;
-            
-            %{
-            x = double(this.i32X)'/(2^20/2) * 3;
-            y = double(this.i32Y)'/(2^20/2) * 3;
-            %}
-            
-            % figure
-            % plot(x, y)
-            
-            dlmwrite(sprintf('x-%s.txt', c), x, 'precision', 5);
-            dlmwrite(sprintf('y-%s.txt', c), y, 'precision', 5);
-        end
+        
+        
         
         function build(this, hParent, dLeft, dTop)
         
@@ -296,10 +270,21 @@ classdef PupilFillGenerator < mic.Base
                 delete(this.(ceProperties{k}));
                 end
             end
-                        
-            
-            
+                                   
         end
+               
+        function st = save(this)
+            st = struct();
+        	st.uiListDirSaved = this.uiListDirSaved.save();
+        end
+        
+        function load(this, st)
+            this.uiListDirSaved.load(st.uiListDirSaved);
+        end
+
+    end
+    
+    methods (Access = private)
         
         function loadPanelWaveformState(this, st)
            
@@ -421,21 +406,6 @@ classdef PupilFillGenerator < mic.Base
             st.uiEditFilterHz = this.uiEditFilterHz.save();
             st.uiEditConvKernelSig = this.uiEditConvKernelSig.save();
         end
-        
-        
-        function st = save(this)
-            st = struct();
-        	st.uiListDirSaved = this.uiListDirSaved.save();
-        end
-        
-        
-        function load(this, st)
-            this.uiListDirSaved.load(st.uiListDirSaved);
-        end
-
-    end
-    
-    methods (Access = private)
         
         function initPanelWaveformQuasar(this)
             
@@ -1296,19 +1266,14 @@ classdef PupilFillGenerator < mic.Base
             
         end
         
+        % Generate a suggested name for save structure
+        % @return {char 1xm}
         
-        
-        
-        function onSave(this, src, evt)
+        function cName = getSuggestedFileName(this)
             
-            
-            % Generate a suggested name for save structure.  
             
             switch this.uipType.getSelectedValue()
                 case this.cMULTIPOLE
-                    
-                    % Multi
-                    
                     switch this.uipMultiTimeType.getSelectedIndex()
                         case uint8(1)
                             % Period
@@ -1346,7 +1311,6 @@ classdef PupilFillGenerator < mic.Base
                     
                 case this.cDC
                     
-                    % DC offset
                     cName = sprintf('DC_x%1.0f_y%1.0f_dt%1.0f', ...
                         this.uiEditDCx.get()*100, ...
                         this.uiEditDCy.get()*100, ...
@@ -1429,6 +1393,11 @@ classdef PupilFillGenerator < mic.Base
                      
             end
             
+        end
+        
+        function onSave(this, src, evt)
+                        
+            cName = this.getSuggestedFileName();
                         
             % NEW 2017.02.02
             % Allow the user to change the filename, if desired but do not
@@ -1450,43 +1419,23 @@ classdef PupilFillGenerator < mic.Base
             end
             
             this.savePupilFill([ceAnswer{1}, '.mat']);
-           
-            
-            % OLD < 2017.02.02
-            % Allowed the user to select a different directory.  Don't do
-            % this because the list always shows only one directory.
-           
-            %{
-            [cFileName, cPathName, cFilterIndex] = uiputfile('*.mat', 'Save As:', cName);
-            
-            % uiputfile returns 0 when the user hits cancel
-            if cFileName ~= 0
-                this.savePupilFill(cFileName, cPathName)
-            end
-            %}
-                                                    
+                       
         end
         
         % @param {char 1xm} cFileName name of file with '.mat' extension
         function savePupilFill(this, cFileName)
                                                 
             s = this.savePanelWaveformState();
+            
+            % 2017.11.29
+            % Could append x, y, t to the structure if I wand and then
+            % the value is always available later on
+            
             save(fullfile(this.uiListDirSaved.getDir(), cFileName), 's');
             
             % Update the mic.ui.common.ListDir
             this.uiListDirSaved.refresh();
-            
-            %{
-            % If the name is not already on the list, append it
-            if isempty(strmatch(cFileName, this.uiListDirSaved.getOptions(), 'exact'))
-                this.uiListDirSaved.append(cFileName);
-            end
-            
-            notify(this, 'eNew');
-            %}
-            
-            % this.saveAsciiFiles(cFileName)            
-           
+                       
         end
         
         
@@ -1785,8 +1734,8 @@ classdef PupilFillGenerator < mic.Base
 
             dTop = dTop + dSep;
             
-            this.uiEditQuasarNumPoles.build(this.hPanelWaveformQuasar, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
-            this.uiEditQuasarNumArcs.build(this.hPanelWaveformQuasar, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uiEditQuasarNumPoles.build(this.hPanelWaveformQuasar, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            this.uiEditQuasarNumArcs.build(this.hPanelWaveformQuasar, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);
 
             dTop = dTop + dSep;
             
