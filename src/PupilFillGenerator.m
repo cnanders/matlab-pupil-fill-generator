@@ -251,8 +251,11 @@ classdef PupilFillGenerator < mic.Base
             % this.buildCameraPanel();
             % this.buildDevicePanel();
             % this.np.build(this.hPanel, 750 + 160, this.dYOffset);
+            
             this.uiListDirSaved.refresh();
-            this.onListChange();
+            
+            % this.onListChange();
+            this.preview();
         end
         
         function delete(this)
@@ -281,6 +284,20 @@ classdef PupilFillGenerator < mic.Base
         function load(this, st)
             this.uiListDirSaved.load(st.uiListDirSaved);
         end
+        
+        % @typedef {struct 1x1} PupilFillData
+        % @property {double 1xm} x - x amplitude [0 : 1]
+        % @property {double 1xm} y - y amplitude [0 : 1]
+        % @property {double 1xm} t - time (sec)
+        
+        % @return {PupilFillData 1x1}
+        function st = get(this)
+            st = struct();
+            st.x = this.dVx;
+            st.y = this.dVy;
+            st.t = this.dTime;
+        end
+        
 
     end
     
@@ -1235,9 +1252,7 @@ classdef PupilFillGenerator < mic.Base
         end
         
         function updateAxes(this)
-            
-            % NEED TO FIX!!
-            
+                        
             if ishandle(this.hPanel) & ... 
                ishandle(this.hAxis2D) & ...
                ishandle(this.hAxis1D)
@@ -1262,6 +1277,8 @@ classdef PupilFillGenerator < mic.Base
                 legend(this.hAxis1D, 'ch1 (x)','ch2 (y)')
                 xlim(this.hAxis1D, [0 max(this.dTime*1000)])
                 ylim(this.hAxis1D, [-1 1])
+            else
+            	this.msg('updateAxes returning since hPanel, hAxis2D or hAxis1D not handle');                
             end
             
         end
