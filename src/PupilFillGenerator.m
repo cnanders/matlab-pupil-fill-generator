@@ -473,7 +473,7 @@ classdef PupilFillGenerator < mic.Base
                 'cType', 'd', ...
                 'fhDirectCallback', @this.onWaveformProperty); 
             this.uiEditQuasarPeriod.setMin(0);
-            this.uiEditQuasarPeriod.set(100);
+            this.uiEditQuasarPeriod.set(200);
             
             this.uiEditQuasarRot = mic.ui.common.Edit(...
                 'cLabel', 'Rot (deg)', ...
@@ -1278,7 +1278,7 @@ classdef PupilFillGenerator < mic.Base
                 xlim(this.hAxis1D, [0 max(this.dTime*1000)])
                 ylim(this.hAxis1D, [-1 1])
             else
-            	this.msg('updateAxes returning since hPanel, hAxis2D or hAxis1D not handle');                
+            	fprintf('PupilFillGenerator updateAxes() returning since hPanel, hAxis2D or hAxis1D not handle');                
             end
             
         end
@@ -1865,7 +1865,7 @@ classdef PupilFillGenerator < mic.Base
             );
             drawnow;            
 
-            dTop = 30
+            dTop = 30;
             this.hAxis1D = axes(...
                 'Parent', this.hPanelPlot,...
                 'Units', 'pixels',...
