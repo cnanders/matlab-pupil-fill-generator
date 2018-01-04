@@ -286,8 +286,8 @@ classdef PupilFillGenerator < mic.Base
         end
         
         % @typedef {struct 1x1} PupilFillData
-        % @property {double 1xm} x - x amplitude [0 : 1]
-        % @property {double 1xm} y - y amplitude [0 : 1]
+        % @property {double 1xm} x - x amplitude [-1 : 1]
+        % @property {double 1xm} y - y amplitude [-1 : 1]
         % @property {double 1xm} t - time (sec)
         
         % @return {PupilFillData 1x1}
@@ -1034,7 +1034,7 @@ classdef PupilFillGenerator < mic.Base
         
         function preview(this)
             
-            fprintf('PupilFillGenerator preview() \n');
+            % fprintf('PupilFillGenerator preview() \n');
             
             if strcmp(this.timerPreviewDebounce.Running, 'on')
                 % Restart
@@ -1048,7 +1048,8 @@ classdef PupilFillGenerator < mic.Base
         
         function previewDebounced(this, src, evt)
             
-            fprintf('PupilFillGenerator previewDebounced() \n');
+            % fprintf('PupilFillGenerator previewDebounced() \n');
+            
             % Build in debouncing to preview
             this.updateWaveforms();
             this.updateAxes();
