@@ -266,6 +266,9 @@ classdef PupilFillGenerator < mic.Base
             % Get properties:
             ceProperties = properties(this);
             
+            % Delete the debounce timer
+            delete(this.timerPreviewDebounce);
+            
             % Loop through properties:
             for k = 1:length(ceProperties)
                 if  isobject(this.(ceProperties{k}))  && ... 
@@ -814,7 +817,9 @@ classdef PupilFillGenerator < mic.Base
         
         function initTimerPreviewDebounce(this)
             
-            this.timerPreviewDebounce = timer;
+            this.timerPreviewDebounce = timer( ...
+                'Name', 'PupilFillGenerator Debounce' ...
+            );
             this.timerPreviewDebounce.StartDelay = 0.1;
             this.timerPreviewDebounce.TimerFcn = @this.previewDebounced;
             
@@ -1279,7 +1284,7 @@ classdef PupilFillGenerator < mic.Base
                 xlim(this.hAxis1D, [0 max(this.dTime*1000)])
                 ylim(this.hAxis1D, [-1 1])
             else
-            	fprintf('PupilFillGenerator updateAxes() returning since hPanel, hAxis2D or hAxis1D not handle');                
+            	fprintf('PupilFillGenerator updateAxes() returning since hPanel, hAxis2D or hAxis1D not handle\n');                
             end
             
         end
@@ -1912,6 +1917,7 @@ classdef PupilFillGenerator < mic.Base
                 ishandle(this.hAxis2DSim)
                 % Proceed
             else
+                fprintf('PupilFillGenerator updatePupilImg() returning since hPanel, hAxis2DSim not handle\n');                
                 return;
             end
                     
@@ -1929,7 +1935,7 @@ classdef PupilFillGenerator < mic.Base
             % computing the pixel because of the way matlab does y
             % coordinates in an image plot
 
-            dVoltsAtEdge = this.dPupilScale*1;
+            dVoltsAtEdge = this.dPupilScale * 1;
 
             
             % dVxPixel {double 1 x length(dVx)}
