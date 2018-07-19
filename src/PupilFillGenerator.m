@@ -268,6 +268,9 @@ classdef PupilFillGenerator < mic.Base
             % Get properties:
             ceProperties = properties(this);
             
+            % Delete the debounce timer
+            delete(this.timerPreviewDebounce);
+            
             % Loop through properties:
             for k = 1:length(ceProperties)
                 if  isobject(this.(ceProperties{k}))  && ... 
@@ -288,8 +291,8 @@ classdef PupilFillGenerator < mic.Base
         end
         
         % @typedef {struct 1x1} PupilFillData
-        % @property {double 1xm} x - x amplitude [0 : 1]
-        % @property {double 1xm} y - y amplitude [0 : 1]
+        % @property {double 1xm} x - x amplitude [-1 : 1]
+        % @property {double 1xm} y - y amplitude [-1 : 1]
         % @property {double 1xm} t - time (sec)
         
         % @return {PupilFillData 1x1}
@@ -485,6 +488,7 @@ classdef PupilFillGenerator < mic.Base
             this.uiEditSerpNumX.set(uint8(5));
             this.uiEditSerpNumX.setMin( uint8(4));
             this.uiEditSerpNumX.setMax( uint8(91));
+
             
             this.uiEditSerpOffsetX = mic.ui.common.Edit(...
                 'cLabel', 'Offset X', ...
@@ -508,6 +512,7 @@ classdef PupilFillGenerator < mic.Base
             this.uiEditSerpNumY.set(uint8(5));
             this.uiEditSerpNumY.setMin( uint8(4));
             this.uiEditSerpNumY.setMax( uint8(91));
+
             
             this.uiEditSerpOffsetY = mic.ui.common.Edit(...
                 'cLabel', 'Offset Y', ...
@@ -526,7 +531,7 @@ classdef PupilFillGenerator < mic.Base
             
             
             this.uiCheckBoxSerpRepeat = mic.ui.common.Checkbox(...
-                'cLabel', 'Repeat', ...
+                'cLabel', 'Gridified Repeat', ...
                 'fhDirectCallback', @this.onUiCheckBoxSerpRepeat ...
             );
             this.uiEditSerpRepeatPeriod = mic.ui.common.Edit(...
@@ -797,7 +802,9 @@ classdef PupilFillGenerator < mic.Base
         
         function initTimerPreviewDebounce(this)
             
-            this.timerPreviewDebounce = timer;
+            this.timerPreviewDebounce = timer( ...
+                'Name', 'PupilFillGenerator Debounce' ...
+            );
             this.timerPreviewDebounce.StartDelay = 0.1;
             this.timerPreviewDebounce.TimerFcn = @this.previewDebounced;
             
@@ -1030,7 +1037,7 @@ classdef PupilFillGenerator < mic.Base
         
         function preview(this)
             
-            fprintf('PupilFillGenerator preview() \n');
+            % fprintf('PupilFillGenerator preview() \n');
             
             if strcmp(this.timerPreviewDebounce.Running, 'on')
                 % Restart
@@ -1044,7 +1051,8 @@ classdef PupilFillGenerator < mic.Base
         
         function previewDebounced(this, src, evt)
             
-            fprintf('PupilFillGenerator previewDebounced() \n');
+            % fprintf('PupilFillGenerator previewDebounced() \n');
+            
             % Build in debouncing to preview
             this.updateWaveforms();
             this.updateAxes();
@@ -1181,7 +1189,7 @@ classdef PupilFillGenerator < mic.Base
                         this.uiEditSawSigY.get(), ...
                         this.uiEditSawPhaseY.get(), ...
                         this.uiEditSawOffsetY.get(), ...
-                        1, ...
+                        2, ...
                         dHz, ...
                         this.uiEditFilterHz.get(), ...
                         this.uiEditTimeStep.get()*1e-6 ...
@@ -1341,7 +1349,7 @@ classdef PupilFillGenerator < mic.Base
                 xlim(this.hAxis1D, [0 max(this.dTime*1000)])
                 ylim(this.hAxis1D, [-1 1])
             else
-            	fprintf('PupilFillGenerator updateAxes() returning since hPanel, hAxis2D or hAxis1D not handle');                
+            	fprintf('PupilFillGenerator updateAxes() returning since hPanel, hAxis2D or hAxis1D not handle\n');                
             end
             
         end
@@ -1995,6 +2003,7 @@ classdef PupilFillGenerator < mic.Base
                 ishandle(this.hAxis2DSim)
                 % Proceed
             else
+                fprintf('PupilFillGenerator updatePupilImg() returning since hPanel, hAxis2DSim not handle\n');                
                 return;
             end
                     
@@ -2012,7 +2021,7 @@ classdef PupilFillGenerator < mic.Base
             % computing the pixel because of the way matlab does y
             % coordinates in an image plot
 
-            dVoltsAtEdge = this.dPupilScale*1;
+            dVoltsAtEdge = this.dPupilScale * 1;
 
             
             % dVxPixel {double 1 x length(dVx)}
