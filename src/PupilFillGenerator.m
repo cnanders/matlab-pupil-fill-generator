@@ -146,6 +146,8 @@ classdef PupilFillGenerator < mic.Base
         uiEditSerpOffsetX
         uiEditSerpOffsetY
         uiEditSerpPeriod
+        uiCheckBoxSerpRepeat
+        uiEditSerpRepeatPeriod
         
         uiEditQuasarRadiusInner
         uiEditQuasarRadiusOuter
@@ -303,125 +305,89 @@ classdef PupilFillGenerator < mic.Base
     
     methods (Access = private)
         
+        function cec = getSaveLoadPropsWaveformState(this)
+            cec = {...
+             'uipType', ...
+             ... % multi
+             'uiEditMultiPoleNum', ...
+             'uiEditMultiSigMin', ...
+             'uiEditMultiSigMax', ...
+             'uiEditMultiCirclesPerPole', ...
+             'uiEditMultiDwell', ... 
+             'uiEditMultiOffset', ...
+             'uiEditMultiRot', ...
+             'uiEditMultiXOffset', ...
+             'uiEditMultiYOffset', ...
+             'uiEditMultiTransitTime', ...
+             'uiEditTimeStep', ...
+             'uipMultiTimeType', ...
+             'uiEditMultiHz', ...
+             'uiEditMultiPeriod', ...
+             ... % saw
+             'uiEditSawSigX', ...
+             'uiEditSawPhaseX', ...
+             'uiEditSawOffsetX', ...
+             'uiEditSawSigY', ...
+             'uiEditSawPhaseY', ...
+             'uiEditSawOffsetY', ...
+             'uipSawTimeType', ...
+             'uiEditSawHz', ...
+             'uiEditSawPeriod', ...
+                ... % serp
+             'uiEditSerpSigX', ...
+             'uiEditSerpSigY', ...
+             'uiEditSerpNumX', ...
+             'uiEditSerpNumY', ...
+             'uiEditSerpOffsetX', ...
+             'uiEditSerpOffsetY', ...
+             'uiEditSerpPeriod', ...
+             'uiCheckBoxSerpRepeat', ...
+             'uiEditSerpRepeatPeriod', ...
+                ... % quasar
+             'uiEditQuasarRadiusInner', ...
+             'uiEditQuasarRadiusOuter', ...
+             'uiEditQuasarNumArcs', ...
+             'uiEditQuasarNumPoles', ...
+             'uiEditQuasarTheta', ...
+             'uiEditQuasarRot', ...
+             'uiEditQuasarOffsetX', ...
+             'uiEditQuasarOffsetY', ...
+             'uiEditQuasarPeriod', ...
+            ... % dc
+             'uiEditDCx', ...
+             'uiEditDCy', ...
+            ... % rastor
+             'uiEditRastorData', ...
+             'uiEditRastorTransitTime', ...
+            ... % filter
+             'uiEditFilterHz', ...
+             'uiEditConvKernelSig' ...
+          };
+        end
+        
+        
         function loadPanelWaveformState(this, st)
            
-             this.uipType.load(st.uipType);
-
-             this.uiEditMultiPoleNum.load(st.uiEditMultiPoleNum);
-             this.uiEditMultiSigMin.load(st.uiEditMultiSigMin);
-             this.uiEditMultiSigMax.load(st.uiEditMultiSigMax);
-             this.uiEditMultiCirclesPerPole.load(st.uiEditMultiCirclesPerPole);
-             this.uiEditMultiDwell.load(st.uiEditMultiDwell);  
-             this.uiEditMultiOffset.load(st.uiEditMultiOffset);
-             this.uiEditMultiRot.load(st.uiEditMultiRot);
-             this.uiEditMultiXOffset.load(st.uiEditMultiXOffset);
-             this.uiEditMultiYOffset.load(st.uiEditMultiYOffset);
-             this.uiEditMultiTransitTime.load(st.uiEditMultiTransitTime);
-             this.uiEditTimeStep.load(st.uiEditTimeStep);
-             this.uipMultiTimeType.load(st.uipMultiTimeType);
-             this.uiEditMultiHz.load(st.uiEditMultiHz);
-             this.uiEditMultiPeriod.load(st.uiEditMultiPeriod);
- 
-             this.uiEditSawSigX.load(st.uiEditSawSigX);
-             this.uiEditSawPhaseX.load(st.uiEditSawPhaseX);
-             this.uiEditSawOffsetX.load(st.uiEditSawOffsetX);
-             this.uiEditSawSigY.load(st.uiEditSawSigY);
-             this.uiEditSawPhaseY.load(st.uiEditSawPhaseY);
-             this.uiEditSawOffsetY.load(st.uiEditSawOffsetY);
-             this.uipSawTimeType.load(st.uipSawTimeType);
-             this.uiEditSawHz.load(st.uiEditSawHz);
-             this.uiEditSawPeriod.load(st.uiEditSawPeriod);
-
-             this.uiEditSerpSigX.load(st.uiEditSerpSigX);
-             this.uiEditSerpSigY.load(st.uiEditSerpSigY);
-             this.uiEditSerpNumX.load(st.uiEditSerpNumX);
-             this.uiEditSerpNumY.load(st.uiEditSerpNumY);
-             this.uiEditSerpOffsetX.load(st.uiEditSerpOffsetX);
-             this.uiEditSerpOffsetY.load(st.uiEditSerpOffsetY);
-             this.uiEditSerpPeriod.load(st.uiEditSerpPeriod);
-             
-             if isfield(st, 'uiEditQuasarRadiusInner')
-                 this.uiEditQuasarRadiusInner.load(st.uiEditQuasarRadiusInner);
-                 this.uiEditQuasarRadiusOuter.load(st.uiEditQuasarRadiusOuter);
-                 this.uiEditQuasarNumArcs.load(st.uiEditQuasarNumArcs);
-                 this.uiEditQuasarNumPoles.load(st.uiEditQuasarNumPoles);
-                 this.uiEditQuasarTheta.load(st.uiEditQuasarTheta);
-                 this.uiEditQuasarRot.load(st.uiEditQuasarRot);
-                 this.uiEditQuasarOffsetX.load(st.uiEditQuasarOffsetX);
-                 this.uiEditQuasarOffsetY.load(st.uiEditQuasarOffsetY);
-                 this.uiEditQuasarPeriod.load(st.uiEditQuasarPeriod);
-             end
-
-
-             this.uiEditDCx.load(st.uiEditDCx);
-             this.uiEditDCy.load(st.uiEditDCy);
-
-             this.uiEditRastorData.load(st.uiEditRastorData);
-             this.uiEditRastorTransitTime.load(st.uiEditRastorTransitTime);
-
-             this.uiEditFilterHz.load(st.uiEditFilterHz);
-             this.uiEditConvKernelSig.load(st.uiEditConvKernelSig);
-             
-            
+            cecProps = this.getSaveLoadPropsWaveformState();
+          
+            for n = 1 : length(cecProps)
+                cProp = cecProps{n};
+               if isfield(st, cProp)
+               	this.(cProp).load(st.(cProp))
+               end
+            end            
         end
         
         function st = savePanelWaveformState(this)
+                        
+            cecProps = this.getSaveLoadPropsWaveformState();
             
             st = struct();
+            for n = 1 : length(cecProps)
+                cProp = cecProps{n};
+                st.(cProp) = this.(cProp).save();
+            end
             
-            st.uipType = this.uipType.save();
-
-            st.uiEditMultiPoleNum = this.uiEditMultiPoleNum.save();
-            st.uiEditMultiSigMin = this.uiEditMultiSigMin.save();
-            st.uiEditMultiSigMax = this.uiEditMultiSigMax.save();
-            st.uiEditMultiCirclesPerPole = this.uiEditMultiCirclesPerPole.save();
-            st.uiEditMultiDwell = this.uiEditMultiDwell.save();  
-            st.uiEditMultiOffset = this.uiEditMultiOffset.save();
-            st.uiEditMultiRot = this.uiEditMultiRot.save();
-            st.uiEditMultiXOffset = this.uiEditMultiXOffset.save();
-            st.uiEditMultiYOffset =  this.uiEditMultiYOffset.save();
-            st.uiEditMultiTransitTime = this.uiEditMultiTransitTime.save();
-            st.uiEditTimeStep = this.uiEditTimeStep.save();
-            st.uipMultiTimeType = this.uipMultiTimeType.save();
-            st.uiEditMultiHz = this.uiEditMultiHz.save();
-            st.uiEditMultiPeriod = this.uiEditMultiPeriod.save();
- 
-            st.uiEditSawSigX = this.uiEditSawSigX.save();
-            st.uiEditSawPhaseX = this.uiEditSawPhaseX.save();
-            st.uiEditSawOffsetX = this.uiEditSawOffsetX.save();
-            st.uiEditSawSigY = this.uiEditSawSigY.save();
-            st.uiEditSawPhaseY = this.uiEditSawPhaseY.save();
-            st.uiEditSawOffsetY = this.uiEditSawOffsetY.save();
-            st.uipSawTimeType = this.uipSawTimeType.save();
-            st.uiEditSawHz = this.uiEditSawHz.save();
-            st.uiEditSawPeriod = this.uiEditSawPeriod.save();
-
-            st.uiEditSerpSigX = this.uiEditSerpSigX.save();
-            st.uiEditSerpSigY = this.uiEditSerpSigY.save();
-            st.uiEditSerpNumX = this.uiEditSerpNumX.save();
-            st.uiEditSerpNumY = this.uiEditSerpNumY.save();
-            st.uiEditSerpOffsetX = this.uiEditSerpOffsetX.save();
-            st.uiEditSerpOffsetY = this.uiEditSerpOffsetY.save();
-            st.uiEditSerpPeriod = this.uiEditSerpPeriod.save();
-            
-            st.uiEditQuasarRadiusInner = this.uiEditQuasarRadiusInner.save();
-            st.uiEditQuasarRadiusOuter = this.uiEditQuasarRadiusOuter.save();
-            st.uiEditQuasarNumArcs = this.uiEditQuasarNumArcs.save();
-            st.uiEditQuasarNumPoles = this.uiEditQuasarNumPoles.save();
-            st.uiEditQuasarTheta = this.uiEditQuasarTheta.save();
-            st.uiEditQuasarRot = this.uiEditQuasarRot.save();
-            st.uiEditQuasarOffsetX = this.uiEditQuasarOffsetX.save();
-            st.uiEditQuasarOffsetY = this.uiEditQuasarOffsetY.save();
-            st.uiEditQuasarPeriod = this.uiEditQuasarPeriod.save();
-
-            st.uiEditDCx = this.uiEditDCx.save();
-            st.uiEditDCy = this.uiEditDCy.save();
-
-            st.uiEditRastorData = this.uiEditRastorData.save();
-            st.uiEditRastorTransitTime = this.uiEditRastorTransitTime.save();
-
-            st.uiEditFilterHz = this.uiEditFilterHz.save();
-            st.uiEditConvKernelSig = this.uiEditConvKernelSig.save();
         end
         
         function initPanelWaveformQuasar(this)
@@ -516,9 +482,9 @@ classdef PupilFillGenerator < mic.Base
                 'cLabel', 'Num X (odd)', ...
                 'cType', 'u8', ...
                 'fhDirectCallback', @this.onWaveformProperty);
-            this.uiEditSerpNumX.set(uint8(7));
+            this.uiEditSerpNumX.set(uint8(5));
             this.uiEditSerpNumX.setMin( uint8(4));
-            this.uiEditSerpNumX.setMax( uint8(51));
+            this.uiEditSerpNumX.setMax( uint8(91));
             
             this.uiEditSerpOffsetX = mic.ui.common.Edit(...
                 'cLabel', 'Offset X', ...
@@ -539,9 +505,9 @@ classdef PupilFillGenerator < mic.Base
                 'cLabel', 'Num Y (odd)', ...
                 'cType', 'u8', ...
                 'fhDirectCallback', @this.onWaveformProperty);
-            this.uiEditSerpNumY.set(uint8(7));
+            this.uiEditSerpNumY.set(uint8(5));
             this.uiEditSerpNumY.setMin( uint8(4));
-            this.uiEditSerpNumY.setMax( uint8(51));
+            this.uiEditSerpNumY.setMax( uint8(91));
             
             this.uiEditSerpOffsetY = mic.ui.common.Edit(...
                 'cLabel', 'Offset Y', ...
@@ -557,6 +523,23 @@ classdef PupilFillGenerator < mic.Base
             this.uiEditSerpPeriod.set(100); 
             this.uiEditSerpPeriod.setMin( 1);
             this.uiEditSerpPeriod.setMax( 10000);
+            
+            
+            this.uiCheckBoxSerpRepeat = mic.ui.common.Checkbox(...
+                'cLabel', 'Repeat', ...
+                'fhDirectCallback', @this.onUiCheckBoxSerpRepeat ...
+            );
+            this.uiEditSerpRepeatPeriod = mic.ui.common.Edit(...
+                'cLabel', 'Repeat Period (ms)', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            );
+            this.uiEditSerpRepeatPeriod.set(1100); 
+            this.uiEditSerpRepeatPeriod.setMin(1);
+            this.uiEditSerpRepeatPeriod.setMax(10000);
+            this.uiEditSerpRepeatPeriod.hide();
+            
+        
             
         end
         
@@ -1032,6 +1015,19 @@ classdef PupilFillGenerator < mic.Base
             this.preview()
         end
         
+        
+        function onUiCheckBoxSerpRepeat(this, src, evt)
+            
+            if this.uiCheckBoxSerpRepeat.get()
+                this.uiEditSerpRepeatPeriod.show();
+            else
+                this.uiEditSerpRepeatPeriod.hide();
+            end
+            
+            this.preview()
+        end
+        
+        
         function preview(this)
             
             fprintf('PupilFillGenerator preview() \n');
@@ -1196,7 +1192,8 @@ classdef PupilFillGenerator < mic.Base
                     this.dTime = st.dT;
                     
                 case this.cSERPENTINE
-                                        
+                     
+                    % No longer filters
                     st = ScannerCore.getSerpentine2( ...
                         this.uiEditSerpSigX.get(), ...
                         this.uiEditSerpSigY.get(), ...
@@ -1210,9 +1207,75 @@ classdef PupilFillGenerator < mic.Base
                         this.uiEditTimeStep.get()*1e-6 ...
                         );
                     
-                    this.dVx = st.dX;
-                    this.dVy = st.dY;
-                    this.dTime = st.dT;
+                    % Repeating 
+                    
+                    if this.uiCheckBoxSerpRepeat.get()
+                        % Compute number of cycles
+                        numCycles = floor(this.uiEditSerpRepeatPeriod.get() / this.uiEditSerpPeriod.get());
+                        
+                        % Build array of shift data
+                        
+                        if numCycles > 1
+                            
+                            nX = double(this.uiEditSerpNumX.get());
+                            nY = double(this.uiEditSerpNumY.get());
+                            
+                            % Compute sigma between lines
+                            sigmaBetweenLinesX = 2 * this.uiEditSerpSigX.get() / (nX - 1);
+                            sigmaBetweenLinesY = 2 * this.uiEditSerpSigY.get() / (nY - 1);
+                            
+                            % Separation between copies
+                            sigmaSepBetweenCopiesX = sigmaBetweenLinesX / (numCycles);
+                            sigmaSepBetweenCopiesY = sigmaBetweenLinesY / (numCycles);
+                            
+                            if mod(numCycles, 2) == 0
+                                % even
+                                shiftRel = ((-numCycles/2 : 1 : (numCycles/2 - 1)) + 1/2);
+                            else
+                                % odd
+                                shiftRel = (-(numCycles - 1)/2 : 1 : (numCycles - 1)/2);
+                            end
+                                           
+                            shiftX = shiftRel * sigmaSepBetweenCopiesX;
+                            shiftY = shiftRel * sigmaSepBetweenCopiesY;
+                            
+                            % Shuffle around
+                            
+                            shiftX = shiftX(randperm(numel(shiftX)));
+                            shiftY = shiftY(randperm(numel(shiftY)));
+                            
+                            
+                            % Repeat a row for every element of dX
+                            shiftX = repmat(shiftX, length(st.dX), 1);
+                            % Reshape into single row matrix by stacking 
+                            % columns
+                            shiftX = reshape(shiftX, 1, numel(shiftX));
+                            
+                            shiftY = repmat(shiftY, length(st.dY), 1);
+                            shiftY = reshape(shiftY, 1, numel(shiftY));
+                            
+                            
+                            this.dVx = repmat(st.dX, 1, numCycles) + shiftX;
+                            this.dVy = repmat(st.dY, 1, numCycles) + shiftY;
+                            
+                        else
+                            
+                            this.dVx = st.dX;
+                            this.dVy = st.dY;
+                        end
+                        
+                        dTimeStep = this.uiEditTimeStep.get() * 1e-6;
+                        this.dTime = 0 : dTimeStep : (length(this.dVx) - 1) * dTimeStep;
+                        
+                    else 
+                       this.dVx = st.dX;
+                       this.dVy = st.dY;
+                       this.dTime = st.dT;
+                    end
+                    
+                    this.dVx = ScannerCore.lowpass(this.dVx, this.dTime, this.uiEditFilterHz.get());
+                    this.dVy = ScannerCore.lowpass(this.dVy, this.dTime, this.uiEditFilterHz.get());
+                    
                     
                 case this.cQUASAR
                     
@@ -1788,7 +1851,7 @@ classdef PupilFillGenerator < mic.Base
                 'Units', 'pixels',...
                 'Title', 'Serpentine config',...
                 'Clipping', 'on',...
-                'Position', mic.Utils.lt2lb([10 65 190 190], this.hPanelWaveform) ...
+                'Position', mic.Utils.lt2lb([10 65 190 280], this.hPanelWaveform) ...
             );
             drawnow;
 
@@ -1809,6 +1872,27 @@ classdef PupilFillGenerator < mic.Base
 
             this.uiEditSerpPeriod.build(this.hPanelWaveformSerp, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
 
+            dTop = dTop + dSep + 10;
+            
+            this.uiCheckBoxSerpRepeat.build(this.hPanelWaveformSerp, ...
+                dLeftCol1, ...
+                dTop, ...
+                100, ...
+                this.dHeightEdit ...
+            );
+            dTop = dTop + dSep - 10;
+            
+            this.uiEditSerpRepeatPeriod.build(...
+                this.hPanelWaveformSerp, ...
+                dLeftCol1, ...
+                dTop, ...
+                dEditWidth, ...
+                this.dHeightEdit ...
+            );
+            if ~this.uiCheckBoxSerpRepeat.get()
+                this.uiEditSerpRepeatPeriod.hide()
+            end
+            
             drawnow;
             
         end

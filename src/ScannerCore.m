@@ -1590,8 +1590,10 @@ classdef ScannerCore
             
             % Filter
             
+            %{
             x = ScannerCore.lowpass(x, t, dFiltHz);
             y = ScannerCore.lowpass(y, t, dFiltHz);
+            %}
             
             % Return
             
