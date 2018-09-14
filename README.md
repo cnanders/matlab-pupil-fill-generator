@@ -10,6 +10,8 @@ MATLAB UI for generating monopole, dipole, quadrupole, disk, annular, auasar, an
 addpath(genpath('vendor/github/cnanders/matlab-pupil-fill-generator/src'));
 addpath(genpath('vendor/github/cnanders/matlab-instrument-control/src'));
 addpath(genpath('vendor/github/cnanders/matlab-quasar/src'));
+addpath(genpath('vendor/github/cnanders/matlab-gridded-pupil-fill/src'));
+
 ```
 5. Instantiate a `PupilFillGenerator` and call its `build()` method
 

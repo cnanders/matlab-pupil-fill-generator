@@ -11,6 +11,7 @@ addpath(genpath(cDirSrc));
 
 % Add dependencies 
 addpath(genpath(fullfile(cDirVendor, 'github', 'cnanders', 'matlab-quasar', 'src')));
+addpath(genpath(fullfile(cDirVendor, 'github', 'cnanders', 'matlab-gridded-pupil-fill', 'src')));
 addpath(genpath(fullfile(cDirVendor, 'github', 'cnanders', 'matlab-instrument-control', 'src')));
 
 % Optionally configure with the directory where waveforms are saved

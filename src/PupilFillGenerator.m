@@ -21,6 +21,12 @@ classdef PupilFillGenerator < mic.Base
         cRASTOR = 'Rastor'
         cSAW = 'Saw'
         cSERPENTINE = 'Serpentine'
+        cGridAnnular = 'Grid Annular'
+        cGridDipoleAsml = 'Grid Dipole (ASML)'
+        cGridQuadrupoleAsml = 'Grid Quadrupole (ASML)'
+        cGridQuasarAsml = 'Grid Quasar (ASML)'
+        cGridHexapoleAsml = 'Grid Hexapole (ASML)'
+        cGridFromImage = 'Grid From Image'
     end
     
     properties
@@ -63,6 +69,12 @@ classdef PupilFillGenerator < mic.Base
         hPanelWaveformSaw
         hPanelWaveformSerp
         hPanelWaveformQuasar
+        hPanelWaveformGridAnnular
+        hPanelWaveformGridDipoleAsml
+        hPanelWaveformGridQuadrupoleAsml
+        hPanelWaveformGridQuasarAsml
+        hPanelWaveformGridHexapoleAsml
+        hPanelWaveformGridFromImage
         hPanelWaveformGeneral
         hPanelSaved
         
@@ -159,6 +171,37 @@ classdef PupilFillGenerator < mic.Base
         uiEditQuasarOffsetX
         uiEditQuasarOffsetY
         
+        uiEditGridAnnularRadius1
+        uiEditGridAnnularRadius2
+        uiEditGridAnnularSizeOfGrid
+        uiEditGridAnnularPeriod
+        
+        
+        uiEditGridDipoleAsmlOffset
+        uiEditGridDipoleAsmlRotation
+        uiEditGridDipoleAsmlSizeOfGrid
+        uiEditGridDipoleAsmlPeriod
+        
+        uiEditGridQuadrupoleAsmlOffset
+        uiEditGridQuadrupoleAsmlRotation
+        uiEditGridQuadrupoleAsmlSizeOfGrid
+        uiEditGridQuadrupoleAsmlPeriod
+        
+        uiEditGridQuasarAsmlOffset1
+        uiEditGridQuasarAsmlOffset2
+        uiEditGridQuasarAsmlRotation
+        uiEditGridQuasarAsmlSizeOfGrid
+        uiEditGridQuasarAsmlPeriod
+        
+        uiEditGridHexapoleAsmlOffset
+        uiEditGridHexapoleAsmlRotation
+        uiEditGridHexapoleAsmlSizeOfGrid
+        uiEditGridHexapoleAsmlPeriod
+        
+        
+        uiEditGridFromImageSizeOfGrid
+        uiEditGridFromImagePeriod
+
         uiEditDCx
         uiEditDCy
         
@@ -392,6 +435,247 @@ classdef PupilFillGenerator < mic.Base
             end
             
         end
+        
+        function initPanelWaveformGridAnnular(this)
+            
+            this.uiEditGridAnnularRadius1 = mic.ui.common.Edit(...
+                'cLabel', 'Radius Inner', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridAnnularRadius1.setMin(0);
+            this.uiEditGridAnnularRadius1.setMax(1);
+            this.uiEditGridAnnularRadius1.set(0.35);
+            
+            
+            this.uiEditGridAnnularRadius2 = mic.ui.common.Edit(...
+                'cLabel', 'Radius Outer', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridAnnularRadius2.setMin(0);
+            this.uiEditGridAnnularRadius2.setMax(1);
+            this.uiEditGridAnnularRadius2.set(0.55);
+            
+            
+            this.uiEditGridAnnularSizeOfGrid = mic.ui.common.Edit(...
+                'cLabel', 'Size of Grid', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridAnnularSizeOfGrid.setMin(0);
+            this.uiEditGridAnnularSizeOfGrid.setMax(1000);
+            this.uiEditGridAnnularSizeOfGrid.set(40);
+            
+            
+            this.uiEditGridAnnularPeriod = mic.ui.common.Edit(...
+                'cLabel', 'Period (ms)', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridAnnularPeriod.setMin(0);
+            this.uiEditGridAnnularPeriod.set(200);
+            
+        end
+        
+        
+        function initPanelWaveformGridFromImage(this)
+                        
+            
+            this.uiEditGridFromImageSizeOfGrid = mic.ui.common.Edit(...
+                'cLabel', 'Size of Grid', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridFromImageSizeOfGrid.setMin(0);
+            this.uiEditGridFromImageSizeOfGrid.setMax(1000);
+            this.uiEditGridFromImageSizeOfGrid.set(40);
+            
+            
+            this.uiEditGridFromImagePeriod = mic.ui.common.Edit(...
+                'cLabel', 'Period (ms)', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridFromImagePeriod.setMin(0);
+            this.uiEditGridFromImagePeriod.set(300);
+            
+        end
+        
+        
+        
+        function initPanelWaveformGridDipoleAsml(this)
+            
+            this.uiEditGridDipoleAsmlOffset = mic.ui.common.Edit(...
+                'cLabel', 'Offset', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridDipoleAsmlOffset.setMin(0);
+            this.uiEditGridDipoleAsmlOffset.setMax(2);
+            this.uiEditGridDipoleAsmlOffset.set(1.5);
+            
+            this.uiEditGridDipoleAsmlRotation = mic.ui.common.Edit(...
+                'cLabel', 'Rotation', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridDipoleAsmlRotation.setMin(0);
+            this.uiEditGridDipoleAsmlRotation.setMax(360);
+            this.uiEditGridDipoleAsmlRotation.set(0);
+            
+                        
+            this.uiEditGridDipoleAsmlSizeOfGrid = mic.ui.common.Edit(...
+                'cLabel', 'Size of Grid', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridDipoleAsmlSizeOfGrid.setMin(0);
+            this.uiEditGridDipoleAsmlSizeOfGrid.setMax(1000);
+            this.uiEditGridDipoleAsmlSizeOfGrid.set(40);
+            
+            
+            this.uiEditGridDipoleAsmlPeriod = mic.ui.common.Edit(...
+                'cLabel', 'Period (ms)', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridDipoleAsmlPeriod.setMin(0);
+            this.uiEditGridDipoleAsmlPeriod.set(300);
+            
+        end
+        
+        function initPanelWaveformGridQuadrupoleAsml(this)
+            
+            this.uiEditGridQuadrupoleAsmlOffset = mic.ui.common.Edit(...
+                'cLabel', 'Offset', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridQuadrupoleAsmlOffset.setMin(0);
+            this.uiEditGridQuadrupoleAsmlOffset.setMax(2);
+            this.uiEditGridQuadrupoleAsmlOffset.set(1.5);
+            
+            this.uiEditGridQuadrupoleAsmlRotation = mic.ui.common.Edit(...
+                'cLabel', 'Rotation', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridQuadrupoleAsmlRotation.setMin(0);
+            this.uiEditGridQuadrupoleAsmlRotation.setMax(360);
+            this.uiEditGridQuadrupoleAsmlRotation.set(0);
+            
+                        
+            this.uiEditGridQuadrupoleAsmlSizeOfGrid = mic.ui.common.Edit(...
+                'cLabel', 'Size of Grid', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridQuadrupoleAsmlSizeOfGrid.setMin(0);
+            this.uiEditGridQuadrupoleAsmlSizeOfGrid.setMax(1000);
+            this.uiEditGridQuadrupoleAsmlSizeOfGrid.set(40);
+            
+            
+            this.uiEditGridQuadrupoleAsmlPeriod = mic.ui.common.Edit(...
+                'cLabel', 'Period (ms)', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridQuadrupoleAsmlPeriod.setMin(0);
+            this.uiEditGridQuadrupoleAsmlPeriod.set(300);
+            
+        end
+        
+        
+        function initPanelWaveformGridQuasarAsml(this)
+            
+            this.uiEditGridQuasarAsmlOffset1 = mic.ui.common.Edit(...
+                'cLabel', 'Offset 1', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridQuasarAsmlOffset1.setMin(0);
+            this.uiEditGridQuasarAsmlOffset1.setMax(2);
+            this.uiEditGridQuasarAsmlOffset1.set(1.1);
+            
+            
+            this.uiEditGridQuasarAsmlOffset2 = mic.ui.common.Edit(...
+                'cLabel', 'Offset 2', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridQuasarAsmlOffset2.setMin(0);
+            this.uiEditGridQuasarAsmlOffset2.setMax(2);
+            this.uiEditGridQuasarAsmlOffset2.set(1.5);
+            
+            
+            this.uiEditGridQuasarAsmlRotation = mic.ui.common.Edit(...
+                'cLabel', 'Rotation', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridQuasarAsmlRotation.setMin(0);
+            this.uiEditGridQuasarAsmlRotation.setMax(360);
+            this.uiEditGridQuasarAsmlRotation.set(0);
+            
+                        
+            this.uiEditGridQuasarAsmlSizeOfGrid = mic.ui.common.Edit(...
+                'cLabel', 'Size of Grid', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridQuasarAsmlSizeOfGrid.setMin(0);
+            this.uiEditGridQuasarAsmlSizeOfGrid.setMax(1000);
+            this.uiEditGridQuasarAsmlSizeOfGrid.set(40);
+            
+            
+            this.uiEditGridQuasarAsmlPeriod = mic.ui.common.Edit(...
+                'cLabel', 'Period (ms)', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridQuasarAsmlPeriod.setMin(0);
+            this.uiEditGridQuasarAsmlPeriod.set(300);
+            
+        end
+        
+        
+        function initPanelWaveformGridHexapoleAsml(this)
+            
+            this.uiEditGridHexapoleAsmlOffset = mic.ui.common.Edit(...
+                'cLabel', 'Offset', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridHexapoleAsmlOffset.setMin(0);
+            this.uiEditGridHexapoleAsmlOffset.setMax(2);
+            this.uiEditGridHexapoleAsmlOffset.set(1.5);
+            
+            this.uiEditGridHexapoleAsmlRotation = mic.ui.common.Edit(...
+                'cLabel', 'Rotation', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridHexapoleAsmlRotation.setMin(0);
+            this.uiEditGridHexapoleAsmlRotation.setMax(360);
+            this.uiEditGridHexapoleAsmlRotation.set(0);
+            
+                        
+            this.uiEditGridHexapoleAsmlSizeOfGrid = mic.ui.common.Edit(...
+                'cLabel', 'Size of Grid', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridHexapoleAsmlSizeOfGrid.setMin(0);
+            this.uiEditGridHexapoleAsmlSizeOfGrid.setMax(1000);
+            this.uiEditGridHexapoleAsmlSizeOfGrid.set(40);
+            
+            
+            this.uiEditGridHexapoleAsmlPeriod = mic.ui.common.Edit(...
+                'cLabel', 'Period (ms)', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridHexapoleAsmlPeriod.setMin(0);
+            this.uiEditGridHexapoleAsmlPeriod.set(300);
+            
+        end
+        
+        
         
         function initPanelWaveformQuasar(this)
             
@@ -764,9 +1048,17 @@ classdef PupilFillGenerator < mic.Base
                     this.cRASTOR, ...
                     this.cSAW, ...
                     this.cSERPENTINE ...
+                    this.cGridAnnular, ...
+                    this.cGridDipoleAsml, ...
+                    this.cGridQuadrupoleAsml, ...
+                    this.cGridQuasarAsml, ...
+                    this.cGridHexapoleAsml, ...
+                    this.cGridFromImage
                  }, ...                
                 'cLabel', 'Type');
             addlistener(this.uipType, 'eChange', @this.onTypeChange);
+            
+            
             
             
             this.initPanelWaveformGeneral();
@@ -776,6 +1068,13 @@ classdef PupilFillGenerator < mic.Base
             this.initPanelWaveformSaw();
             this.initPanelWaveformSerp();
             this.initPanelWaveformQuasar();
+            
+            this.initPanelWaveformGridAnnular();
+            this.initPanelWaveformGridDipoleAsml();
+            this.initPanelWaveformGridQuadrupoleAsml();
+            this.initPanelWaveformGridQuasarAsml();
+            this.initPanelWaveformGridHexapoleAsml();
+            this.initPanelWaveformGridFromImage();
             
             this.uiButtonPreview = mic.ui.common.Button(...
                 'cText', 'Preview');
@@ -933,6 +1232,48 @@ classdef PupilFillGenerator < mic.Base
                     else
                         this.buildPanelWaveformQuasar();
                     end
+                case this.cGridAnnular
+                    this.hideOtherPanelWaveforms(this.hPanelWaveformGridAnnular);
+                    if ishandle(this.hPanelWaveformGridAnnular)
+                        set(this.hPanelWaveformGridAnnular, 'Visible', 'on');
+                    else
+                        this.buildPanelWaveformGridAnnular();
+                    end
+                case this.cGridDipoleAsml
+                    this.hideOtherPanelWaveforms(this.hPanelWaveformGridDipoleAsml);
+                    if ishandle(this.hPanelWaveformGridDipoleAsml)
+                        set(this.hPanelWaveformGridDipoleAsml, 'Visible', 'on');
+                    else
+                        this.buildPanelWaveformGridDipoleAsml();
+                    end
+                case this.cGridQuadrupoleAsml
+                    this.hideOtherPanelWaveforms(this.hPanelWaveformGridQuadrupoleAsml);
+                    if ishandle(this.hPanelWaveformGridQuadrupoleAsml)
+                        set(this.hPanelWaveformGridQuadrupoleAsml, 'Visible', 'on');
+                    else
+                        this.buildPanelWaveformGridQuadrupoleAsml();
+                    end
+                case this.cGridQuasarAsml
+                    this.hideOtherPanelWaveforms(this.hPanelWaveformGridQuasarAsml);
+                    if ishandle(this.hPanelWaveformGridQuasarAsml)
+                        set(this.hPanelWaveformGridQuasarAsml, 'Visible', 'on');
+                    else
+                        this.buildPanelWaveformGridQuasarAsml();
+                    end
+                case this.cGridHexapoleAsml
+                    this.hideOtherPanelWaveforms(this.hPanelWaveformGridHexapoleAsml);
+                    if ishandle(this.hPanelWaveformGridHexapoleAsml)
+                        set(this.hPanelWaveformGridHexapoleAsml, 'Visible', 'on');
+                    else
+                        this.buildPanelWaveformGridHexapoleAsml();
+                    end
+               case this.cGridFromImage
+                    this.hideOtherPanelWaveforms(this.hPanelWaveformGridFromImage);
+                    if ishandle(this.hPanelWaveformGridFromImage)
+                        set(this.hPanelWaveformGridFromImage, 'Visible', 'on');
+                    else
+                        this.buildPanelWaveformGridFromImage();
+                    end
                     
             end
             
@@ -964,7 +1305,13 @@ classdef PupilFillGenerator < mic.Base
                 this.hPanelWaveformRastor, ...
                 this.hPanelWaveformSaw, ...
                 this.hPanelWaveformSerp, ...
-                this.hPanelWaveformQuasar ...
+                this.hPanelWaveformQuasar, ...
+                this.hPanelWaveformGridAnnular, ...
+                this.hPanelWaveformGridDipoleAsml, ...
+                this.hPanelWaveformGridQuadrupoleAsml, ...
+                this.hPanelWaveformGridQuasarAsml, ...
+                this.hPanelWaveformGridHexapoleAsml, ...
+                this.hPanelWaveformGridFromImage ...
             };
             
             % loop through all panels
@@ -1102,6 +1449,7 @@ classdef PupilFillGenerator < mic.Base
         end
         
         function updateWaveforms(this)
+            
             
             % Update:
             % 
@@ -1287,7 +1635,7 @@ classdef PupilFillGenerator < mic.Base
                     
                 case this.cQUASAR
                     
-                    st = quasar(...
+                    st = quasar2(...
                         'radiusPoleInner', this.uiEditQuasarRadiusInner.get(), ...
                         'radiusPoleOuter', this.uiEditQuasarRadiusOuter.get(), ...
                         'numArcs', this.uiEditQuasarNumArcs.get(), ...
@@ -1313,6 +1661,144 @@ classdef PupilFillGenerator < mic.Base
                    this.dVx = x;
                    this.dVy = y;
                    this.dTime = st.t;
+                   
+                case this.cGridAnnular
+                   
+                    [x, y, int] = griddedPupilFill.getAnnular(...
+                        this.uiEditGridAnnularRadius1.get(), ...
+                        this.uiEditGridAnnularRadius2.get(), ...
+                        this.uiEditGridAnnularSizeOfGrid.get() ...
+                    );
+                
+                    [x, y, t] = griddedPupilFill.getTimeSignals(...
+                        x, ...
+                        y, ...
+                        int, ...
+                        this.uiEditTimeStep.get() * 1e-6, ...
+                        this.uiEditGridAnnularPeriod.get() * 1e-3 ...
+                     );
+                 
+                    x = ScannerCore.lowpass(x, t, this.uiEditFilterHz.get());
+                    y = ScannerCore.lowpass(y, t, this.uiEditFilterHz.get());
+            
+                   this.dVx = x;
+                   this.dVy = y;
+                   this.dTime = t;
+                   
+                case this.cGridDipoleAsml
+                   
+                    [x, y, int] = griddedPupilFill.getDipoleAsml(...
+                        this.uiEditGridDipoleAsmlOffset.get(), ...
+                        this.uiEditGridDipoleAsmlRotation.get(), ...
+                        this.uiEditGridDipoleAsmlSizeOfGrid.get() ...
+                    );
+                
+                    [x, y, t] = griddedPupilFill.getTimeSignals(...
+                        x, ...
+                        y, ...
+                        int, ...
+                        this.uiEditTimeStep.get() * 1e-6, ...
+                        this.uiEditGridDipoleAsmlPeriod.get() * 1e-3 ...
+                     );
+                 
+                    x = ScannerCore.lowpass(x, t, this.uiEditFilterHz.get());
+                    y = ScannerCore.lowpass(y, t, this.uiEditFilterHz.get());
+            
+                   this.dVx = x;
+                   this.dVy = y;
+                   this.dTime = t;
+                   
+                case this.cGridQuadrupoleAsml
+                   
+                    [x, y, int] = griddedPupilFill.getQuadrupoleAsml(...
+                        this.uiEditGridQuadrupoleAsmlOffset.get(), ...
+                        this.uiEditGridQuadrupoleAsmlRotation.get(), ...
+                        this.uiEditGridQuadrupoleAsmlSizeOfGrid.get() ...
+                    );
+                
+                    [x, y, t] = griddedPupilFill.getTimeSignals(...
+                        x, ...
+                        y, ...
+                        int, ...
+                        this.uiEditTimeStep.get() * 1e-6, ...
+                        this.uiEditGridQuadrupoleAsmlPeriod.get() * 1e-3 ...
+                     );
+                 
+                    x = ScannerCore.lowpass(x, t, this.uiEditFilterHz.get());
+                    y = ScannerCore.lowpass(y, t, this.uiEditFilterHz.get());
+            
+                   this.dVx = x;
+                   this.dVy = y;
+                   this.dTime = t;
+                   
+                case this.cGridQuasarAsml
+                   
+                    [x, y, int] = griddedPupilFill.getQuasarAsml(...
+                        this.uiEditGridQuasarAsmlOffset1.get(), ...
+                        this.uiEditGridQuasarAsmlOffset2.get(), ...
+                        this.uiEditGridQuasarAsmlRotation.get(), ...
+                        this.uiEditGridQuasarAsmlSizeOfGrid.get() ...
+                    );
+                
+                    [x, y, t] = griddedPupilFill.getTimeSignals(...
+                        x, ...
+                        y, ...
+                        int, ...
+                        this.uiEditTimeStep.get() * 1e-6, ...
+                        this.uiEditGridQuasarAsmlPeriod.get() * 1e-3 ...
+                     );
+                 
+                    x = ScannerCore.lowpass(x, t, this.uiEditFilterHz.get());
+                    y = ScannerCore.lowpass(y, t, this.uiEditFilterHz.get());
+            
+                   this.dVx = x;
+                   this.dVy = y;
+                   this.dTime = t;
+                   
+                   
+                case this.cGridHexapoleAsml
+                   
+                    [x, y, int] = griddedPupilFill.getHexapoleAsml(...
+                        this.uiEditGridHexapoleAsmlOffset.get(), ...
+                        this.uiEditGridHexapoleAsmlRotation.get(), ...
+                        this.uiEditGridHexapoleAsmlSizeOfGrid.get() ...
+                    );
+                
+                    [x, y, t] = griddedPupilFill.getTimeSignals(...
+                        x, ...
+                        y, ...
+                        int, ...
+                        this.uiEditTimeStep.get() * 1e-6, ...
+                        this.uiEditGridHexapoleAsmlPeriod.get() * 1e-3 ...
+                     );
+                 
+                    x = ScannerCore.lowpass(x, t, this.uiEditFilterHz.get());
+                    y = ScannerCore.lowpass(y, t, this.uiEditFilterHz.get());
+            
+                   this.dVx = x;
+                   this.dVy = y;
+                   this.dTime = t;
+                   
+               case this.cGridFromImage
+                   
+                    [x, y, int] = griddedPupilFill.getFromImage(...
+                        this.uiEditGridHexapoleAsmlSizeOfGrid.get() ...
+                    );
+                
+                    [x, y, t] = griddedPupilFill.getTimeSignals(...
+                        x, ...
+                        y, ...
+                        int, ...
+                        this.uiEditTimeStep.get() * 1e-6, ...
+                        this.uiEditGridFromImagePeriod.get() * 1e-3 ...
+                     );
+                 
+                    x = ScannerCore.lowpass(x, t, this.uiEditFilterHz.get());
+                    y = ScannerCore.lowpass(y, t, this.uiEditFilterHz.get());
+            
+                   this.dVx = x;
+                   this.dVy = y;
+                   this.dTime = t;
                                         
             end
             
@@ -1478,8 +1964,75 @@ classdef PupilFillGenerator < mic.Base
                         sprintf('filthz%1.0f_', this.uiEditFilterHz.get()), ...
                         sprintf('dt%1.0f', this.uiEditTimeStep.get()) ...
                     ];
+                case this.cGridAnnular
+                    cName = [...
+                        'Grid_Annular_', ...
+                        sprintf('rIn%1.0f_', this.uiEditGridAnnularRadius1.get() * 100)...
+                        sprintf('rOut%1.0f_', this.uiEditGridAnnularRadius2.get() * 100), ...
+                        sprintf('sizeOfGrid%1.0f_', this.uiEditGridAnnularSizeOfGrid.get()), ...
+                        sprintf('period%1.0f_', this.uiEditGridAnnularPeriod.get()), ...
+                        sprintf('filthz%1.0f_', this.uiEditFilterHz.get()), ...
+                        sprintf('dt%1.0f', this.uiEditTimeStep.get()) ...
+                    ];
+               case this.cGridDipoleAsml
+                    cName = [...
+                        'Grid_Dipole_ASML_', ...
+                        sprintf('offset%1.0f_', this.uiEditGridDipoleAsmlOffset.get() * 100)...
+                        sprintf('rotation%1.0f_', this.uiEditGridDipoleAsmlRotation.get()), ...
+                        sprintf('sizeOfGrid%1.0f_', this.uiEditGridDipoleAsmlSizeOfGrid.get()), ...
+                        sprintf('period%1.0f_', this.uiEditGridDipoleAsmlPeriod.get()), ...
+                        sprintf('filthz%1.0f_', this.uiEditFilterHz.get()), ...
+                        sprintf('dt%1.0f', this.uiEditTimeStep.get()) ...
+                    ];
+                case this.cGridQuadrupoleAsml
+                    cName = [...
+                        'Grid_Quadrupole_ASML_', ...
+                        sprintf('offset%1.0f_', this.uiEditGridQuadrupoleAsmlOffset.get() * 100)...
+                        sprintf('rotation%1.0f_', this.uiEditGridQuadrupoleAsmlRotation.get()), ...
+                        sprintf('sizeOfGrid%1.0f_', this.uiEditGridQuadrupoleAsmlSizeOfGrid.get()), ...
+                        sprintf('period%1.0f_', this.uiEditGridQuadrupoleAsmlPeriod.get()), ...
+                        sprintf('filthz%1.0f_', this.uiEditFilterHz.get()), ...
+                        sprintf('dt%1.0f', this.uiEditTimeStep.get()) ...
+                    ];
+               case this.cGridQuasarAsml
+                    cName = [...
+                        'Grid_Quasar_ASML_', ...
+                        sprintf('offset1_%1.0f_', this.uiEditGridQuasarAsmlOffset1.get() * 100)...
+                        sprintf('offset2_%1.0f_', this.uiEditGridQuasarAsmlOffset2.get() * 100)...
+                        sprintf('rotation%1.0f_', this.uiEditGridQuasarAsmlRotation.get()), ...
+                        sprintf('sizeOfGrid%1.0f_', this.uiEditGridQuasarAsmlSizeOfGrid.get()), ...
+                        sprintf('period%1.0f_', this.uiEditGridQuasarAsmlPeriod.get()), ...
+                        sprintf('filthz%1.0f_', this.uiEditFilterHz.get()), ...
+                        sprintf('dt%1.0f', this.uiEditTimeStep.get()) ...
+                    ];
+               case this.cGridHexapoleAsml
+                    cName = [...
+                        'Grid_Hexapole_ASML_', ...
+                        sprintf('offset_%1.0f_', this.uiEditGridHexapoleAsmlOffset.get() * 100)...
+                        sprintf('rotation%1.0f_', this.uiEditGridHexapoleAsmlRotation.get()), ...
+                        sprintf('sizeOfGrid%1.0f_', this.uiEditGridHexapoleAsmlSizeOfGrid.get()), ...
+                        sprintf('period%1.0f_', this.uiEditGridHexapoleAsmlPeriod.get()), ...
+                        sprintf('filthz%1.0f_', this.uiEditFilterHz.get()), ...
+                        sprintf('dt%1.0f', this.uiEditTimeStep.get()) ...
+                    ];
+                
+                
+               case this.cGridHexapoleAsml
+                    cName = [...
+                        'Grid_From_Image_', ...
+                        sprintf('sizeOfGrid%1.0f_', this.uiEditGridFromImageSizeOfGrid.get()), ...
+                        sprintf('period%1.0f_', this.uiEditGridFromImagePeriod.get()), ...
+                        sprintf('filthz%1.0f_', this.uiEditFilterHz.get()), ...
+                        sprintf('dt%1.0f', this.uiEditTimeStep.get()) ...
+                    ];
                      
             end
+            
+            
+            cName = sprintf('%s_%s', ...
+                cName, ...
+                datestr(datevec(now), 'yyyymmdd-HHMMSS', 'local') ...
+            );
             
         end
         
@@ -1840,6 +2393,243 @@ classdef PupilFillGenerator < mic.Base
             this.uiEditQuasarPeriod.build(this.hPanelWaveformQuasar, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
             
         end
+        
+        
+        function buildPanelWaveformGridAnnular(this)
+            
+            if ~ishandle(this.hPanelWaveform)
+                return
+            end
+            
+            dLeftCol1 = 10;
+            dLeftCol2 = 100;
+            dEditWidth = 80;
+            dTop = 20;
+            dSep = 40;
+
+            this.hPanelWaveformGridAnnular = uipanel(...
+                'Parent', this.hPanelWaveform,...
+                'Units', 'pixels',...
+                'Title', 'Grid Annular Config',...
+                'Clipping', 'on',...
+                'Position', mic.Utils.lt2lb([10 65 190 230], this.hPanelWaveform) ...
+            );
+            drawnow;
+            
+            hPanel = this.hPanelWaveformGridAnnular;
+            
+            this.uiEditGridAnnularRadius1.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uiEditGridAnnularRadius2.build(hPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
+
+            dTop = dTop + dSep;
+            
+            this.uiEditGridAnnularSizeOfGrid.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+            
+            dTop = dTop + dSep;
+            
+            this.uiEditGridAnnularPeriod.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+        end
+        
+        
+         function buildPanelWaveformGridFromImage(this)
+            
+            if ~ishandle(this.hPanelWaveform)
+                return
+            end
+            
+            dLeftCol1 = 10;
+            dLeftCol2 = 100;
+            dEditWidth = 80;
+            dTop = 20;
+            dSep = 40;
+
+            this.hPanelWaveformGridFromImage = uipanel(...
+                'Parent', this.hPanelWaveform,...
+                'Units', 'pixels',...
+                'Title', 'Grid From Image Config',...
+                'Clipping', 'on',...
+                'Position', mic.Utils.lt2lb([10 65 190 230], this.hPanelWaveform) ...
+            );
+            drawnow;
+            
+            hPanel = this.hPanelWaveformGridFromImage;
+            
+            
+            this.uiEditGridFromImageSizeOfGrid.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+            
+            dTop = dTop + dSep;
+            
+            this.uiEditGridFromImagePeriod.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+        end
+        
+        
+        
+        function buildPanelWaveformGridDipoleAsml(this)
+            
+            if ~ishandle(this.hPanelWaveform)
+                return
+            end
+            
+            dLeftCol1 = 10;
+            dLeftCol2 = 100;
+            dEditWidth = 80;
+            dTop = 20;
+            dSep = 40;
+
+            this.hPanelWaveformGridDipoleAsml = uipanel(...
+                'Parent', this.hPanelWaveform,...
+                'Units', 'pixels',...
+                'Title', 'Grid Dipole (ASML) Config',...
+                'Clipping', 'on',...
+                'Position', mic.Utils.lt2lb([10 65 190 230], this.hPanelWaveform) ...
+            );
+            drawnow;
+            
+            hPanel = this.hPanelWaveformGridDipoleAsml;
+            
+            this.uiEditGridDipoleAsmlOffset.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+
+            dTop = dTop + dSep;
+            
+            this.uiEditGridDipoleAsmlRotation.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+            dTop = dTop + dSep;
+            
+            this.uiEditGridDipoleAsmlSizeOfGrid.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+            
+            dTop = dTop + dSep;
+            
+            this.uiEditGridDipoleAsmlPeriod.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+        end
+        
+        
+        function buildPanelWaveformGridQuadrupoleAsml(this)
+            
+            if ~ishandle(this.hPanelWaveform)
+                return
+            end
+            
+            dLeftCol1 = 10;
+            dLeftCol2 = 100;
+            dEditWidth = 80;
+            dTop = 20;
+            dSep = 40;
+
+            this.hPanelWaveformGridQuadrupoleAsml = uipanel(...
+                'Parent', this.hPanelWaveform,...
+                'Units', 'pixels',...
+                'Title', 'Grid Quadrupole (ASML) Config',...
+                'Clipping', 'on',...
+                'Position', mic.Utils.lt2lb([10 65 190 230], this.hPanelWaveform) ...
+            );
+            drawnow;
+            
+            hPanel = this.hPanelWaveformGridQuadrupoleAsml;
+            
+            this.uiEditGridQuadrupoleAsmlOffset.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+
+            dTop = dTop + dSep;
+            
+            this.uiEditGridQuadrupoleAsmlRotation.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+            dTop = dTop + dSep;
+            
+            this.uiEditGridQuadrupoleAsmlSizeOfGrid.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+            
+            dTop = dTop + dSep;
+            
+            this.uiEditGridQuadrupoleAsmlPeriod.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+        end
+        
+        
+        function buildPanelWaveformGridQuasarAsml(this)
+            
+            if ~ishandle(this.hPanelWaveform)
+                return
+            end
+            
+            dLeftCol1 = 10;
+            dLeftCol2 = 100;
+            dEditWidth = 80;
+            dTop = 20;
+            dSep = 40;
+
+            this.hPanelWaveformGridQuasarAsml = uipanel(...
+                'Parent', this.hPanelWaveform,...
+                'Units', 'pixels',...
+                'Title', 'Grid Quasar (ASML) Config',...
+                'Clipping', 'on',...
+                'Position', mic.Utils.lt2lb([10 65 190 230], this.hPanelWaveform) ...
+            );
+            drawnow;
+            
+            hPanel = this.hPanelWaveformGridQuasarAsml;
+            
+            this.uiEditGridQuasarAsmlOffset1.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uiEditGridQuasarAsmlOffset2.build(hPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);
+            dTop = dTop + dSep;
+            
+            this.uiEditGridQuasarAsmlRotation.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+            dTop = dTop + dSep;
+            
+            this.uiEditGridQuasarAsmlSizeOfGrid.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+            
+            dTop = dTop + dSep;
+            
+            this.uiEditGridQuasarAsmlPeriod.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+        end
+        
+        
+        function buildPanelWaveformGridHexapoleAsml(this)
+            
+            if ~ishandle(this.hPanelWaveform)
+                return
+            end
+            
+            dLeftCol1 = 10;
+            dLeftCol2 = 100;
+            dEditWidth = 80;
+            dTop = 20;
+            dSep = 40;
+
+            this.hPanelWaveformGridHexapoleAsml = uipanel(...
+                'Parent', this.hPanelWaveform,...
+                'Units', 'pixels',...
+                'Title', 'Grid Quasar (ASML) Config',...
+                'Clipping', 'on',...
+                'Position', mic.Utils.lt2lb([10 65 190 230], this.hPanelWaveform) ...
+            );
+            drawnow;
+            
+            hPanel = this.hPanelWaveformGridHexapoleAsml;
+            
+            this.uiEditGridHexapoleAsmlOffset.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            dTop = dTop + dSep;
+            
+            this.uiEditGridHexapoleAsmlRotation.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+            dTop = dTop + dSep;
+            
+            this.uiEditGridHexapoleAsmlSizeOfGrid.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+            
+            dTop = dTop + dSep;
+            
+            this.uiEditGridHexapoleAsmlPeriod.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+        end
+        
         
         
         function buildPanelWaveformSerp(this)
