@@ -54,6 +54,8 @@ classdef PupilFillGenerator < mic.Base
         cDirApp
         % { char 1xm} full path to dir of saved pupilfills
         cDirWaveforms
+        cDirWaveformsStarred
+        
         
         cSaveDir
         
@@ -208,12 +210,15 @@ classdef PupilFillGenerator < mic.Base
         uiEditRastorData
         uiEditRastorTransitTime
         uiListDirSaved
+        uiListDirStarred
         
         uiEditFilterHz
         uiEditConvKernelSig
         
         uiButtonPreview
         uiButtonSave
+        
+        uiButtonCopyToStarred
                 
     end
     
@@ -239,6 +244,12 @@ classdef PupilFillGenerator < mic.Base
                 sprintf('scanner-%s', this.cDevice) ...
             );
         
+            this.cDirWaveformsStarred = fullfile(...
+                this.cDirApp, ...
+                'save', ...
+                sprintf('scanner-%s-starred', this.cDevice) ...
+            );
+        
             % Apply varargin
             
             for k = 1 : 2: length(varargin)
@@ -250,6 +261,7 @@ classdef PupilFillGenerator < mic.Base
             end
             
             mic.Utils.checkDir(this.cDirWaveforms);
+            mic.Utils.checkDir(this.cDirWaveformsStarred);
             
             this.init();
         end
@@ -291,6 +303,7 @@ classdef PupilFillGenerator < mic.Base
             
             this.buildPanelWaveform();
             this.buildPanelSaved();
+            this.buildPanelStarred();
             this.buildPanelPlot();
             
             % this.buildCameraPanel();
@@ -323,14 +336,41 @@ classdef PupilFillGenerator < mic.Base
             end
                                    
         end
-               
+           
+        function cec = getSaveLoadProps(this)
+            
+            cec = {...
+                'uiListDirSaved', ...
+                'uiListDirStarred' ...
+            };
+        end
+        
         function st = save(this)
+             cecProps = this.getSaveLoadProps();
+            
             st = struct();
-        	st.uiListDirSaved = this.uiListDirSaved.save();
+            for n = 1 : length(cecProps)
+                cProp = cecProps{n};
+                if this.hasProp( cProp)
+                    st.(cProp) = this.(cProp).save();
+                end
+            end
+
+             
         end
         
         function load(this, st)
-            this.uiListDirSaved.load(st.uiListDirSaved);
+                        
+            cecProps = this.getSaveLoadProps();
+            for n = 1 : length(cecProps)
+               cProp = cecProps{n};
+               if isfield(st, cProp)
+                   if this.hasProp( cProp )
+                        this.(cProp).load(st.(cProp))
+                   end
+               end
+            end
+            
         end
         
         % @typedef {struct 1x1} PupilFillData
@@ -1124,7 +1164,21 @@ classdef PupilFillGenerator < mic.Base
                 'lShowDelete', true, ...
                 'lShowMove', false, ...
                 'lShowLabel', false ...
-            );    
+            );  
+        
+            this.uiListDirStarred = mic.ui.common.ListDir(...
+                'cDir', this.cDirWaveformsStarred, ...
+                'cFilter', '*.mat', ...
+                'fhOnChange', @this.onListChange, ...
+                'lShowDelete', true, ...
+                'lShowMove', false, ...
+                'lShowLabel', false ...
+            ); 
+        
+            this.uiButtonCopyToStarred = mic.ui.common.Button(...
+                'cText', 'Copy To Starred', ...
+                'fhOnClick', @this.onUiButtonCopyToStarred ...
+            );
         end
         
         
@@ -2730,6 +2784,37 @@ classdef PupilFillGenerator < mic.Base
             
         end
         
+        function buildPanelStarred(this)
+            
+            if ~ishandle(this.hPanel)
+                return;
+            end
+            
+            dWidth = this.dWidthPanelSaved;
+
+            hPanel = uipanel(...
+                'Parent', this.hPanel,...
+                'Units', 'pixels',...
+                'Title', 'Starred',...
+                'BorderWidth', this.dWidthPanelBorder, ...
+                'Clipping', 'on',...
+                'Position', mic.Utils.lt2lb([230 475 dWidth 165], this.hPanel) ...
+            );
+            
+            dHeightListDir = 75;
+                    
+            this.uiListDirStarred.build(...
+                hPanel, ...
+                10, ...
+                20, ...
+                dWidth-20, ...
+                dHeightListDir ...
+            );
+        
+            
+        end
+        
+        
         function buildPanelSaved(this)
             
             if ~ishandle(this.hPanel)
@@ -2744,18 +2829,23 @@ classdef PupilFillGenerator < mic.Base
                 'Title', 'Saved',...
                 'BorderWidth', this.dWidthPanelBorder, ...
                 'Clipping', 'on',...
-                'Position', mic.Utils.lt2lb([230 320 dWidth 320], this.hPanel) ...
+                'Position', mic.Utils.lt2lb([230 320 dWidth 160], this.hPanel) ...
             );
             drawnow;
             
-            dButtonWidth = 100;
+            dHeightListDir = 70;
+            
             this.uiListDirSaved.build(...
                 hPanel, ...
                 10, ...
                 20, ...
                 dWidth-20, ...
-                220 ...
+                dHeightListDir ...
             );
+        
+            dWidthButton = 120;
+            dLeft = dWidth - dWidthButton - 140;
+            this.uiButtonCopyToStarred.build(hPanel, dLeft, 130, dWidthButton, 24);
             
         end
         
@@ -3098,13 +3188,45 @@ classdef PupilFillGenerator < mic.Base
             
         end
         
+        function onUiButtonCopyToStarred(this, ~, ~)
+            
+            ceSelected = this.uiListDirSaved.get();
+            
+            if isempty(ceSelected)
+                return
+            end
+            
+            % ceSelected is a cell of selected options - use the first
+            % one.  Populates a structure named s in the local
+            % workspace of this method
+
+            % full path to the file to copy
+            cPathOfOrigin = fullfile( ...
+                this.uiListDirSaved.getDir(), ...
+                ceSelected{1} ...
+            );
+        
+            % full path of destination
+            cPathOfDestination = fullfile( ...
+                this.uiListDirStarred.getDir(), ...
+                ceSelected{1} ...
+            );
+        
+            copyfile(cPathOfOrigin, cPathOfDestination);
+            this.uiListDirStarred.refresh();
+            
+            
+        end
+        
         
         function onListChange(this, src, evt)
             
+            % src is this.uiListDirSaved or
+            % this.uiListDirStarred
             this.msg('onListChange()');
             
             % Load the .mat file
-            ceSelected = this.uiListDirSaved.get();
+            ceSelected = src.get();
             
             if ~isempty(ceSelected)
                 
@@ -3113,7 +3235,7 @@ classdef PupilFillGenerator < mic.Base
                 % workspace of this method
                 
                 cFile = fullfile( ...
-                    this.uiListDirSaved.getDir(), ...
+                    src.getDir(), ...
                     ceSelected{1} ...
                 );
             
