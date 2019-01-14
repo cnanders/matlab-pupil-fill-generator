@@ -25,5 +25,5 @@ sc.build();
 
 - [https://github.com/cnanders/matlab-quasar](https://github.com/cnanders/matlab-quasar)
 - [https://github.com/cnanders/matlab-instrument-control](https://github.com/cnanders/matlab-instrument-control) for the UI (v1.1.0)
-
+- [https://github.com/cnanders/matlab-gridded-pupil-fill](https://github.com/cnanders/matlab-gridded-pupil-fill)
 

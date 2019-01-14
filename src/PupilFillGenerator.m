@@ -62,6 +62,10 @@ classdef PupilFillGenerator < mic.Base
         cDevice = 'M142'       
         
         dYOffset = 360;
+        
+        % {logical 1x1} false when calculating a new waveform,  true
+        % otherwise.  Access with isDone() method
+        lIsDone = true
                
         hPanel
         hPanelWaveform
@@ -243,13 +247,11 @@ classdef PupilFillGenerator < mic.Base
                 'save', ...
                 sprintf('scanner-%s', this.cDevice) ...
             );
-        
             this.cDirWaveformsStarred = fullfile(...
-                this.cDirApp, ...
-                'save', ...
-                sprintf('scanner-%s-starred', this.cDevice) ...
+                this.cDirWaveforms, ...
+                'starred' ...
             );
-        
+            
             % Apply varargin
             
             for k = 1 : 2: length(varargin)
@@ -267,7 +269,26 @@ classdef PupilFillGenerator < mic.Base
         end
             
          
+        function l = isDone(this)
+            l = this.lIsDone;
+        end
+            
         
+        function setStarredByName(this, cName)
+                        
+            ceOptions = this.uiListDirStarred.getOptions();
+            
+            % http://arnabocean.com/frontposts/2013-10-14-matlabstrfind/
+            dIndex = find(strcmp(ceOptions, cName));
+            
+            if dIndex <= 0
+                return
+            end
+            
+            this.lIsDone = false;
+            this.uiListDirStarred.setSelectedIndexes(uint8(dIndex));
+            
+        end
         
         
         
@@ -3221,6 +3242,8 @@ classdef PupilFillGenerator < mic.Base
         
         function onListChange(this, src, evt)
             
+            this.lIsDone = false;
+            
             % src is this.uiListDirSaved or
             % this.uiListDirStarred
             this.msg('onListChange()');
@@ -3275,6 +3298,8 @@ classdef PupilFillGenerator < mic.Base
                 
             end
             
+            
+            this.lIsDone = true;
  
         end
         
