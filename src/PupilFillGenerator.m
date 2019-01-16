@@ -52,9 +52,14 @@ classdef PupilFillGenerator < mic.Base
         cDirThis
         % {char 1xm} full path to dir of the project
         cDirApp
+        
+        
         % { char 1xm} full path to dir of saved pupilfills
         cDirWaveforms
         cDirWaveformsStarred
+        % {logical 1x1} show the "choose dir" button on both lists of saved
+        % pupilfills
+        lShowChooseDir = true
         
         
         cSaveDir
@@ -213,6 +218,7 @@ classdef PupilFillGenerator < mic.Base
         
         uiEditRastorData
         uiEditRastorTransitTime
+        
         uiListDirSaved
         uiListDirStarred
         
@@ -223,6 +229,12 @@ classdef PupilFillGenerator < mic.Base
         uiButtonSave
         
         uiButtonCopyToStarred
+        
+        
+        % {char 1xm} - path of recipe that is currently loaded into memory.
+        % If the loaded waveform was created with preview() and not yet
+        % saved, it will be an empty {char}
+        cPathOfRecipe = '';
                 
     end
     
@@ -268,7 +280,21 @@ classdef PupilFillGenerator < mic.Base
             this.init();
         end
             
+        function c = getDirSaved(this)
+            c = this.uiListDirSaved.getDir();
+        end
+        
+        function c = getDirStarred(this)
+            c = this.uiListDirStarred.getDir();
+        end
+        
+        function c = getPathOfRecipe(this)
+            c = this.cPathOfRecipe;
+        end
          
+        
+        % Returns {logical 1x1} false when calculating a new waveform to load
+        % into the internal memory buffer,  true otherwise.
         function l = isDone(this)
             l = this.lIsDone;
         end
@@ -1182,6 +1208,7 @@ classdef PupilFillGenerator < mic.Base
                 'cDir', this.cDirWaveforms, ...
                 'cFilter', '*.mat', ...
                 'fhOnChange', @this.onListChange, ...
+                'lShowChooseDir', this.lShowChooseDir, ...
                 'lShowDelete', true, ...
                 'lShowMove', false, ...
                 'lShowLabel', false ...
@@ -1191,6 +1218,7 @@ classdef PupilFillGenerator < mic.Base
                 'cDir', this.cDirWaveformsStarred, ...
                 'cFilter', '*.mat', ...
                 'fhOnChange', @this.onListChange, ...
+                'lShowChooseDir', this.lShowChooseDir, ...
                 'lShowDelete', true, ...
                 'lShowMove', false, ...
                 'lShowLabel', false ...
@@ -1498,6 +1526,8 @@ classdef PupilFillGenerator < mic.Base
                 start(this.timerPreviewDebounce); 
             end
             
+            
+            
         end
         
         function previewDebounced(this, src, evt)
@@ -1545,10 +1575,21 @@ classdef PupilFillGenerator < mic.Base
 
                     this.uitMultiFreqRange.set(cMsg);
             end
+            
+            
+           
+            
         end
         
         
         function onPreview(this, src, evt)
+            
+            % Clear the path of the recipe associated with the currently
+            % loaded waveform since when clicking preview we load an
+            % unsaved recipe into memory
+            
+            this.cPathOfRecipe = '';
+            
             this.preview()
         end
         
@@ -2813,16 +2854,17 @@ classdef PupilFillGenerator < mic.Base
             
             dWidth = this.dWidthPanelSaved;
 
+            dTop = 10 + 155;
             hPanel = uipanel(...
                 'Parent', this.hPanel,...
                 'Units', 'pixels',...
                 'Title', 'Starred',...
                 'BorderWidth', this.dWidthPanelBorder, ...
                 'Clipping', 'on',...
-                'Position', mic.Utils.lt2lb([230 475 dWidth 165], this.hPanel) ...
+                'Position', mic.Utils.lt2lb([230 dTop dWidth 165], this.hPanel) ...
             );
             
-            dHeightListDir = 75;
+            dHeightListDir = 85;
                     
             this.uiListDirStarred.build(...
                 hPanel, ...
@@ -2844,17 +2886,18 @@ classdef PupilFillGenerator < mic.Base
             
             dWidth = this.dWidthPanelSaved;
 
+            dTop = 10;
             hPanel = uipanel(...
                 'Parent', this.hPanel,...
                 'Units', 'pixels',...
                 'Title', 'Saved',...
                 'BorderWidth', this.dWidthPanelBorder, ...
                 'Clipping', 'on',...
-                'Position', mic.Utils.lt2lb([230 320 dWidth 160], this.hPanel) ...
+                'Position', mic.Utils.lt2lb([230 10 dWidth 160], this.hPanel) ...
             );
             drawnow;
             
-            dHeightListDir = 70;
+            dHeightListDir = 85;
             
             this.uiListDirSaved.build(...
                 hPanel, ...
@@ -2889,7 +2932,7 @@ classdef PupilFillGenerator < mic.Base
                 'Clipping', 'on',... 
                 'BackgroundColor', [1 1 1], ...
                 'BorderType', 'none', ...
-                'Position', mic.Utils.lt2lb([230 10 this.dWidthPanelPlot 300], this.hPanel) ...
+                'Position', mic.Utils.lt2lb([230 340 this.dWidthPanelPlot 300], this.hPanel) ...
             );
             drawnow;            
 
@@ -3242,6 +3285,15 @@ classdef PupilFillGenerator < mic.Base
         
         function onListChange(this, src, evt)
             
+            % Because this is called any time the user clicks on a list, it
+            % means that dX, dY always reflect the waveform that is showing
+            % in the plot and it means that clicking writeIllum in the
+            % nPoint LC400 UI always grabs the correct waveform. 
+            
+            % In fact, you don't even need to save a waveform to have the
+            % LC400 ui grab the correct thing.  Whatever shows above is
+            % what it sets.
+            
             this.lIsDone = false;
             
             % src is this.uiListDirSaved or
@@ -3272,7 +3324,8 @@ classdef PupilFillGenerator < mic.Base
                     % When dVx, dVy, etc. are private
                     this.preview();  
                     
-                    % When dVx, dVy, etc. are public
+                    % Update the path of the recipe that is loaded
+                    this.cPathOfRecipe = cFile;
                     
                 else
                     
