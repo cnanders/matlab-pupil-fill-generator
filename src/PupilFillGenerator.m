@@ -390,6 +390,7 @@ classdef PupilFillGenerator < mic.Base
                 'uiListDirSaved', ...
                 'uiListDirStarred' ...
             };
+            cec = {};
         end
         
         function st = save(this)
