@@ -59,7 +59,7 @@ classdef PupilFillGenerator < mic.Base
         cDirWaveformsStarred
         % {logical 1x1} show the "choose dir" button on both lists of saved
         % pupilfills
-        lShowChooseDir = true
+        lShowChooseDir = false
         
         
         cSaveDir
@@ -359,8 +359,8 @@ classdef PupilFillGenerator < mic.Base
             
             this.uiListDirSaved.refresh();
             
-            % this.onListChange();
-            this.preview();
+            this.onListChange(this.uiListDirSaved, []);
+            % this.preview();
         end
         
         function delete(this)
