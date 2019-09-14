@@ -1,1 +1,7 @@
-{"dependencies":["matlab_instrument_control","matlab_gridded_pupil_fill","matlab_quasar"]}
+{
+	"dependencies":[
+		"matlab_instrument_control",
+		"matlab_gridded_pupil_fill",
+		"matlab_quasar"
+	]
+}
