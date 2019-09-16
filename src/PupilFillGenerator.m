@@ -113,7 +113,6 @@ classdef PupilFillGenerator < mic.Base
         hSerpentineConvOutputAxes
         hSerpentineCurrentAxes
         
-        dPreviewPixels = 220;
         dPreviewScale = 1.1;
         
         
@@ -224,17 +223,25 @@ classdef PupilFillGenerator < mic.Base
         
         uiEditFilterHz
         uiEditConvKernelSig
+        uiEditPixels % num of samples in 2D plot
         
         uiButtonPreview
         uiButtonSave
         
         uiButtonCopyToStarred
         
+        uiButtonExportSrc
+        
         
         % {char 1xm} - path of recipe that is currently loaded into memory.
         % If the loaded waveform was created with preview() and not yet
         % saved, it will be an empty {char}
         cPathOfRecipe = '';
+        
+        % Storage of the x, y, int matrixies plotted in the preview
+        dIntPupil
+        dXPupil
+        dYPupil
                 
     end
     
@@ -385,12 +392,13 @@ classdef PupilFillGenerator < mic.Base
         end
            
         function cec = getSaveLoadProps(this)
-            
             cec = {...
-                'uiListDirSaved', ...
-                'uiListDirStarred' ...
+                'uiEditPixels', ...
+                'uiEditConvKernelSig', ...
+                ...'uiListDirSaved', ...
+                ...'uiListDirStarred' ...
             };
-            cec = {};
+            % cec = {};
         end
         
         function st = save(this)
@@ -1122,7 +1130,6 @@ classdef PupilFillGenerator < mic.Base
             this.uiEditMultiHz.set(200);
             this.uiEditMultiPeriod.set(100);
             
-            
         end
         
         function initPanelWaveformGeneral(this)
@@ -1133,9 +1140,21 @@ classdef PupilFillGenerator < mic.Base
                 'cLabel', 'Filter Hz', ...
                 'cType', 'd', ...
                 'fhDirectCallback', @this.onWaveformProperty);
+            
+            
             this.uiEditFilterHz.set(400);
             this.uiEditFilterHz.setMin(1);
             this.uiEditFilterHz.setMax(10000);
+            
+            this.uiEditPixels = mic.ui.common.Edit(...
+                'cLabel', 'Pixels', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onUiEditPixels ...
+            );
+            
+            this.uiEditPixels.set(251);
+            this.uiEditPixels.setMin(21);
+            this.uiEditPixels.setMax(10000);
             
             
             this.uiEditTimeStep = mic.ui.common.Edit(...
@@ -1250,17 +1269,86 @@ classdef PupilFillGenerator < mic.Base
             this.initTimerPreviewDebounce()
             this.initPanelWaveform();
             this.initPanelSaved();
+            
+            this.uiButtonExportSrc = mic.ui.common.Button(...
+                'cText', 'Export .src', ...
+                'fhDirectCallback', @this.onUiButtonExportSrc ...
+            );
                                     
         end
         
         
         
        
+        function onUiButtonExportSrc(this, ~, ~)
+            
+            % dIntPupil
+            % dXPupil
+            % dYPupil
+            
+            % Get a file, make sure user doesn't cancel.
+            
+            [cPath, cName, cExt] = fileparts(this.cPathOfRecipe);
+            
+            
+            cFilter = '*.txt';
+            cTitle = 'Save Pupil as x,y,i .txt ';
+            cNameDefault = [cName, datestr(datevec(now), 'yyyymmdd-HHMMSS', 'local'), '-SRC.txt'];
+            cDefault = fullfile(pwd, cNameDefault);
+            
+            [cFile, cDir] = uiputfile(...
+                cFilter, ...
+                cTitle, ...
+                cDefault ...
+            );
         
-        
-        
-        
+            if isequal(cFile, 0)
+               return; % User clicked "cancel"
+            end
+            
+            cPath = fullfile(cDir, cFile);
+            
+            if exist(cPath, 'file') ~= 2
+                % File doesn't exist 
+                % open new file in write mode
+                try
+                    fid = fopen(cPath, 'w');
+                catch mE
+                    cMsg = sprintf('LogPlotter could not open file (write mode) %s', cPath);
+                    disp(cMsg);
+                    mE;
+                    
+                end
+
+            else 
+                % open file in append mode
+                msgbox('File already exists');
+                return;
+            end
+                       
+            [dRows, dCols] = size(this.dXPupil);
+            
+            % dRows = num of records
+            % dCols = num of channels per record
+            
+            for m = 1 : dRows
+                for n = 1 : dCols
+                    fprintf(fid, '%1.4f, %1.4f, %1.8f', ...
+                        this.dXPupil(m, n), ...
+                        this.dYPupil(m, n), ...
+                        this.dIntPupil(m, n) ...
+                    );
+                    fprintf(fid, '\n'); % line break
+                end
                 
+            end
+                
+            fclose(fid);   
+            
+            
+        end
+        
+      
         function onMultiTimeTypeChange(this, src, evt)
             
                                                 
@@ -2320,6 +2408,7 @@ classdef PupilFillGenerator < mic.Base
             % Build filter Hz, Volts scale and time step
 
             this.uiEditFilterHz.build(this.hPanelWaveformGeneral, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            this.uiEditPixels.build(this.hPanelWaveformGeneral, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
             dTop = dTop + dSep;
 
             this.uiEditTimeStep.build(this.hPanelWaveformGeneral, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
@@ -2940,6 +3029,10 @@ classdef PupilFillGenerator < mic.Base
                 % 'YTick',[],...
                 % 'Xlim',[obj.stagexminCAL obj.stagexmaxCAL] ...
                 % 'Color',[0.3,0.3,0.3],...
+                
+            dLeft = 3*(dSize+dPad);
+            dTop = dTop + dSize + 10;
+            this.uiButtonExportSrc.build(this.hPanelPlot, dLeft, dTop, 100, 24);
                                 
         end
 
@@ -2962,7 +3055,7 @@ classdef PupilFillGenerator < mic.Base
            
             % Create empty pupil fill matrices
 
-            int = zeros(this.dPreviewPixels,this.dPreviewPixels);
+            int = zeros(this.uiEditPixels.get(),this.uiEditPixels.get());
 
             % Map each (vx,vy) pair to its corresponding pixel in the pupil
             % fill matrices.  For vy, need to flip its sign before
@@ -2975,15 +3068,15 @@ classdef PupilFillGenerator < mic.Base
             % dVxPixel {double 1 x length(dVx)}
             % dVyPixel {double 1 x length(dVy)}
             % 
-            dVxPixel = ceil(this.dVx/dVoltsAtEdge*(this.dPupilPixels/2)) + floor(this.dPupilPixels/2);
-            dVyPixel = ceil(-this.dVy/dVoltsAtEdge*(this.dPupilPixels/2)) + floor(this.dPupilPixels/2);                    
+            dVxPixel = ceil(this.dVx/dVoltsAtEdge*(this.uiEditPixels.get()/2)) + floor(this.uiEditPixels.get()/2);
+            dVyPixel = ceil(-this.dVy/dVoltsAtEdge*(this.uiEditPixels.get()/2)) + floor(this.uiEditPixels.get()/2);                    
             
 
             % If any of the pixels lie outside the matrix, discard them
 
-            dIndex = find(  dVxPixel <= this.dPupilPixels & ...
+            dIndex = find(  dVxPixel <= this.uiEditPixels.get() & ...
                             dVxPixel > 0 & ...
-                            dVyPixel <= this.dPupilPixels & ...
+                            dVyPixel <= this.uiEditPixels.get() & ...
                             dVyPixel > 0 ...
                             );
 
@@ -3010,6 +3103,12 @@ classdef PupilFillGenerator < mic.Base
 
             int = conv2(int,dKernelInt.^2,'same');
             int = int./max(max(int));
+            
+            this.dIntPupil = int;
+            this.dXPupil = linspace(-this.dPupilScale, this.dPupilScale, this.uiEditPixels.get());
+            this.dYPupil = this.dXPupil;
+            [this.dXPupil, this.dYPupil] = meshgrid(this.dXPupil, this.dYPupil);
+                
             % int = imrotate(int, 90);
 
 
@@ -3124,8 +3223,8 @@ classdef PupilFillGenerator < mic.Base
                 
                 %{
                 % When x/y is pixels
-                dXBox = dXBox*this.dPupilPixels/this.dPupilScale/2 + this.dPupilPixels/2;
-                dYBox = dYBox*this.dPupilPixels/this.dPupilScale/2 + this.dPupilPixels/2;
+                dXBox = dXBox*this.uiEditPixels.get()/this.dPupilScale/2 + this.uiEditPixels.get()/2;
+                dYBox = dYBox*this.uiEditPixels.get()/this.dPupilScale/2 + this.uiEditPixels.get()/2;
                 %}
                                 
                 line( ...
@@ -3167,13 +3266,13 @@ classdef PupilFillGenerator < mic.Base
             % Create plotting data for circles at sigma = 0.3 - 1.0
 
             dSig = [0.3:0.1:1.0];
-            dPhase = linspace(0, 2*pi, this.dPupilPixels);
+            dPhase = linspace(0, 2*pi, this.uiEditPixels.get());
 
             for (k = 1:length(dSig))
 
                 % set(this.hPanel, 'CurrentAxes', this.hAxis2DSim)
-                x = dSig(k)*this.dPupilPixels/this.dPupilScale/2*cos(dPhase) + this.dPupilPixels/2;
-                y = dSig(k)*this.dPupilPixels/this.dPupilScale/2*sin(dPhase) + this.dPupilPixels/2;
+                x = dSig(k)*this.uiEditPixels.get()/this.dPupilScale/2*cos(dPhase) + this.uiEditPixels.get()/2;
+                y = dSig(k)*this.uiEditPixels.get()/this.dPupilScale/2*sin(dPhase) + this.uiEditPixels.get()/2;
                 line( ...
                     x, y, ...
                     'color', [0.3 0.3 0.3], ... % [0.3 0.1 0.4], ... % [1 1 0] == yellow
@@ -3218,6 +3317,11 @@ classdef PupilFillGenerator < mic.Base
             elseif nargin == 12;
                 out = exp(-x.^2/2);
             end
+            
+        end
+        
+        function onUiEditPixels(this, ~, ~)
+            this.preview();
             
         end
         
@@ -3352,12 +3456,12 @@ classdef PupilFillGenerator < mic.Base
             
             dKernelSig = 0.02; % Using uiEdit now.
             
-            dKernelSigPixels = this.uiEditConvKernelSig.get()*this.dPupilPixels/this.dPupilScale/2;
+            dKernelSigPixels = this.uiEditConvKernelSig.get()*this.uiEditPixels.get() / 2 / this.dPupilScale;
             dKernelPixels = floor(dKernelSigPixels*2*4); % the extra factor of 2 is for oversize padding
             [dX, dY] = this.getXY(dKernelPixels, dKernelPixels, dKernelPixels, dKernelPixels);
             dKernelInt = this.gauss(dX, dKernelSigPixels, dY, dKernelSigPixels);
                         
-            [dX, dY] = this.getXY(this.dPreviewPixels, this.dPreviewPixels, 2*this.dPreviewScale, 2*this.dPreviewScale);
+            [dX, dY] = this.getXY(this.uiEditPixels.get(), this.uiEditPixels.get(), 2*this.dPreviewScale, 2*this.dPreviewScale);
             dKernelInt = this.gauss(dX, this.uiEditConvKernelSig.get(), dY, this.uiEditConvKernelSig.get());
             
             
@@ -3387,8 +3491,8 @@ classdef PupilFillGenerator < mic.Base
                 % of mass is in the center
 
                 dArea = sum(sum(dKernelInt));
-                dMeanX = sum(sum(dKernelInt.*dX))/dArea*this.dPreviewPixels/2;
-                dMeanY = sum(sum(dKernelInt.*dY))/dArea*this.dPreviewPixels/2;
+                dMeanX = sum(sum(dKernelInt.*dX))/dArea*this.uiEditPixels.get()/2;
+                dMeanY = sum(sum(dKernelInt.*dY))/dArea*this.uiEditPixels.get()/2;
 
                 dKernelInt = circshift(dKernelInt, [-round(dMeanX), -round(dMeanY)]);
                                
