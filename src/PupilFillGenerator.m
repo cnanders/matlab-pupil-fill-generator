@@ -1291,8 +1291,8 @@ classdef PupilFillGenerator < mic.Base
             [cPath, cName, cExt] = fileparts(this.cPathOfRecipe);
             
             
-            cFilter = '*.txt';
-            cTitle = 'Save Pupil as x,y,i .txt ';
+            cFilter = '*.src';
+            cTitle = 'Save Pupil as x,y,i .src ';
             cNameDefault = [cName, datestr(datevec(now), 'yyyymmdd-HHMMSS', 'local'), '.src'];
             cDefault = fullfile(pwd, cNameDefault);
             
