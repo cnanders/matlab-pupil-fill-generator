@@ -1293,7 +1293,7 @@ classdef PupilFillGenerator < mic.Base
             
             cFilter = '*.txt';
             cTitle = 'Save Pupil as x,y,i .txt ';
-            cNameDefault = [cName, datestr(datevec(now), 'yyyymmdd-HHMMSS', 'local'), '-SRC.txt'];
+            cNameDefault = [cName, datestr(datevec(now), 'yyyymmdd-HHMMSS', 'local'), '.src'];
             cDefault = fullfile(pwd, cNameDefault);
             
             [cFile, cDir] = uiputfile(...
