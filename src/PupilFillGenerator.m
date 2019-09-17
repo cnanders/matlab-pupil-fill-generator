@@ -1306,8 +1306,35 @@ classdef PupilFillGenerator < mic.Base
                return; % User clicked "cancel"
             end
             
+            
             cPath = fullfile(cDir, cFile);
             
+            [dRows, dCols] = size(this.dXPupil);
+            
+            dX = zeros(1, dRows * dCols);
+            dY = zeros(1, dRows * dCols);
+            dZ = zeros(1, dRows * dCols);
+            
+            count = 1;
+            % dRows = num of records
+            % dCols = num of channels per record
+            
+            for m = 1 : dRows
+                for n = 1 : dCols
+                    dX(count) = this.dXPupil(m, n);
+                    dY(count) = this.dYPupil(m, n);
+                    dZ(count) = this.dIntPupil(m, n);
+                    count = count + 1;
+                end
+            end
+            
+            pupil.x = dX;
+            pupil.y = dY;
+            pupil.z = dZ;
+         
+            PT_save_src(pupil, cPath);
+            
+            %{
             if exist(cPath, 'file') ~= 2
                 % File doesn't exist 
                 % open new file in write mode
@@ -1343,7 +1370,9 @@ classdef PupilFillGenerator < mic.Base
                 
             end
                 
-            fclose(fid);   
+            fclose(fid);  
+ 
+            %}
             
             
         end

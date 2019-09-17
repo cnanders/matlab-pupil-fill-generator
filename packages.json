@@ -2,6 +2,7 @@
 	"dependencies":[
 		"matlab_instrument_control",
 		"matlab_gridded_pupil_fill",
-		"matlab_quasar"
+		"matlab_quasar",
+		"matlab_prolith_src"
 	]
 }
