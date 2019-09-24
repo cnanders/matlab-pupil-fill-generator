@@ -16,6 +16,7 @@ classdef PupilFillGenerator < mic.Base
         dColorBgFigure = [200 200 200]./255;
         
         cQUASAR = 'Quasar'
+        cGridQuasar = 'Grid Quasar'
         cMULTIPOLE = 'Multipole'
         cDC = 'DC'
         cRASTOR = 'Rastor'
@@ -80,6 +81,7 @@ classdef PupilFillGenerator < mic.Base
         hPanelWaveformSaw
         hPanelWaveformSerp
         hPanelWaveformQuasar
+        hPanelWaveformGridQuasar
         hPanelWaveformGridAnnular
         hPanelWaveformGridDipoleAsml
         hPanelWaveformGridQuadrupoleAsml
@@ -180,6 +182,18 @@ classdef PupilFillGenerator < mic.Base
         uiEditQuasarRot
         uiEditQuasarOffsetX
         uiEditQuasarOffsetY
+        
+        
+        uiEditGridQuasarRadiusInner
+        uiEditGridQuasarRadiusOuter
+        uiEditGridQuasarNumSamples
+        uiEditGridQuasarNumPoles
+        uiEditGridQuasarTheta
+        uiEditGridQuasarPeriod
+        uiEditGridQuasarRot
+        uiEditGridQuasarOffsetX
+        uiEditGridQuasarOffsetY
+        uiEditGridQuasarVelocityOfStep % sigma / s
         
         uiEditGridAnnularRadius1
         uiEditGridAnnularRadius2
@@ -880,6 +894,94 @@ classdef PupilFillGenerator < mic.Base
         end
         
         
+        function initPanelWaveformGridQuasar(this)
+            
+            this.uiEditGridQuasarRadiusInner = mic.ui.common.Edit(...
+                'cLabel', 'Radius Inner', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridQuasarRadiusInner.setMin(0);
+            this.uiEditGridQuasarRadiusInner.setMax(1);
+            this.uiEditGridQuasarRadiusInner.set(0.5);
+            
+            
+            this.uiEditGridQuasarRadiusOuter = mic.ui.common.Edit(...
+                'cLabel', 'Radius Outer', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridQuasarRadiusOuter.setMin(0);
+            this.uiEditGridQuasarRadiusOuter.setMax(1);
+            this.uiEditGridQuasarRadiusOuter.set(0.7);
+            
+            this.uiEditGridQuasarNumSamples = mic.ui.common.Edit(...
+                'cLabel', 'Size of Grid', ...
+                'cType', 'u8', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridQuasarNumSamples.set(uint8(50));
+            this.uiEditGridQuasarNumSamples.setMin(uint8(10));
+            
+            this.uiEditGridQuasarNumPoles = mic.ui.common.Edit(...
+                'cLabel', 'Num Poles', ...
+                'cType', 'u8', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridQuasarNumPoles.set(uint8(4));
+            this.uiEditGridQuasarNumPoles.setMin(uint8(1));
+            
+            
+            this.uiEditGridQuasarTheta = mic.ui.common.Edit(...
+                'cLabel', 'Pole Angle (deg)', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridQuasarTheta.setMin(0);
+            this.uiEditGridQuasarTheta.setMax(360);
+            this.uiEditGridQuasarTheta.set(30);
+            
+            this.uiEditGridQuasarPeriod = mic.ui.common.Edit(...
+                'cLabel', 'Period (ms)', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridQuasarPeriod.setMin(0);
+            this.uiEditGridQuasarPeriod.set(200);
+            
+            this.uiEditGridQuasarRot = mic.ui.common.Edit(...
+                'cLabel', 'Rot (deg)', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridQuasarRot.setMin(-360);
+            this.uiEditGridQuasarRot.setMax(360);
+            this.uiEditGridQuasarRot.set(0);
+            
+            this.uiEditGridQuasarOffsetX = mic.ui.common.Edit(...
+                'cLabel', 'Offset X', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridQuasarOffsetX.setMin(0);
+            this.uiEditGridQuasarOffsetX.setMax(1);
+            this.uiEditGridQuasarOffsetX.set(0);
+            
+            this.uiEditGridQuasarOffsetY = mic.ui.common.Edit(...
+                'cLabel', 'Offset Y', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridQuasarOffsetY.setMin(0);
+            this.uiEditGridQuasarOffsetY.setMax(1);
+            this.uiEditGridQuasarOffsetY.set(0);
+            
+            
+            this.uiEditGridQuasarVelocityOfStep = mic.ui.common.Edit(...
+                'cLabel', 'Step Vel (sig/ms)', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridQuasarVelocityOfStep.set(1);
+            this.uiEditGridQuasarVelocityOfStep.setMin(.1);
+            this.uiEditGridQuasarVelocityOfStep.setMax(10);
+            
+            
+        end
+        
+        
         function initPanelWaveformSerp(this)
             
             this.uiEditSerpSigX = mic.ui.common.Edit(...
@@ -1179,6 +1281,7 @@ classdef PupilFillGenerator < mic.Base
             this.uipType = mic.ui.common.Popup(...
                 'ceOptions', {...
                     this.cQUASAR, ...
+                    this.cGridQuasar, ...
                     this.cMULTIPOLE, ...
                     this.cDC, ...
                     this.cRASTOR, ...
@@ -1193,10 +1296,7 @@ classdef PupilFillGenerator < mic.Base
                  }, ...                
                 'cLabel', 'Type');
             addlistener(this.uipType, 'eChange', @this.onTypeChange);
-            
-            
-            
-            
+
             this.initPanelWaveformGeneral();
             this.initPanelWaveformMulti();
             this.initPanelWaveformDC();
@@ -1204,7 +1304,7 @@ classdef PupilFillGenerator < mic.Base
             this.initPanelWaveformSaw();
             this.initPanelWaveformSerp();
             this.initPanelWaveformQuasar();
-            
+            this.initPanelWaveformGridQuasar();
             this.initPanelWaveformGridAnnular();
             this.initPanelWaveformGridDipoleAsml();
             this.initPanelWaveformGridQuadrupoleAsml();
@@ -1485,6 +1585,13 @@ classdef PupilFillGenerator < mic.Base
                         set(this.hPanelWaveformQuasar, 'Visible', 'on');
                     else
                         this.buildPanelWaveformQuasar();
+                    end
+                case this.cGridQuasar
+                    this.hideOtherPanelWaveforms(this.hPanelWaveformGridQuasar);
+                    if ishandle(this.hPanelWaveformGridQuasar)
+                        set(this.hPanelWaveformGridQuasar, 'Visible', 'on');
+                    else
+                        this.buildPanelWaveformGridQuasar();
                     end
                 case this.cGridAnnular
                     this.hideOtherPanelWaveforms(this.hPanelWaveformGridAnnular);
@@ -1928,6 +2035,47 @@ classdef PupilFillGenerator < mic.Base
                    this.dVx = x;
                    this.dVy = y;
                    this.dTime = st.t;
+                  
+                case this.cGridQuasar
+                    
+                    [x, y, int] = griddedPupilFill.getQuasar(...
+                        'radiusPoleInner', this.uiEditGridQuasarRadiusInner.get(), ...
+                        'radiusPoleOuter', this.uiEditGridQuasarRadiusOuter.get(), ...
+                        'numSamples', this.uiEditGridQuasarNumSamples.get(), ...
+                        'numPoles', this.uiEditGridQuasarNumPoles.get(), ...
+                        'thetaPole', this.uiEditGridQuasarTheta.get() ...
+                    );
+                    [x, y, int] = griddedPupilFill.reorderToMinimizeDeltas(x, y, int);
+                    
+                    [x, y, t] = griddedPupilFill.getTimeSignals(...
+                        x, ...
+                        y, ...
+                        int, ...
+                        this.uiEditTimeStep.get() * 1e-6, ...
+                        this.uiEditGridQuasarPeriod.get() * 1e-3, ...
+                        this.uiEditGridQuasarVelocityOfStep.get() * 1000 ...
+                    );
+                 
+                    % Rotate
+                    
+                    
+                    [theta, rho] = cart2pol(x, y);
+                    theta = theta + this.uiEditGridQuasarRot.get() * pi / 180;
+                    [x, y] = pol2cart(theta, rho);
+                    
+                    
+                    % Offset 
+                    
+                    x = x + this.uiEditGridQuasarOffsetX.get();
+                    y = y + this.uiEditGridQuasarOffsetY.get();
+                    
+                    
+                    x = ScannerCore.lowpass(x, t, this.uiEditFilterHz.get());
+                    y = ScannerCore.lowpass(y, t, this.uiEditFilterHz.get());
+            
+                    this.dVx = x;
+                    this.dVy = y;
+                    this.dTime = t;
                    
                 case this.cGridAnnular
                    
@@ -2237,6 +2385,22 @@ classdef PupilFillGenerator < mic.Base
                         sprintf('filthz%1.0f_', this.uiEditFilterHz.get()), ...
                         sprintf('dt%1.0f', this.uiEditTimeStep.get()) ...
                     ];
+                case this.cGridQuasar
+                    
+                    cName = [...
+                        'GridQuasar_', ...
+                        sprintf('rIn%1.0f_', this.uiEditGridQuasarRadiusInner.get() * 100)...
+                        sprintf('rOut%1.0f_', this.uiEditGridQuasarRadiusOuter.get() * 100), ...
+                        sprintf('numPoles%1.0f_', this.uiEditGridQuasarNumPoles.get()), ...
+                        sprintf('numSamples%1.0f_', this.uiEditGridQuasarNumSamples.get()), ...
+                        sprintf('theta%1.1f_', this.uiEditGridQuasarTheta.get()), ...
+                        sprintf('rot%1.1f_', this.uiEditGridQuasarRot.get()), ...
+                        sprintf('offX%1.0f_', this.uiEditGridQuasarOffsetX.get() * 100), ...
+                        sprintf('offY%1.0f_', this.uiEditGridQuasarOffsetY.get() * 100), ...
+                        sprintf('period%1.0f_', this.uiEditGridQuasarPeriod.get()), ...
+                        sprintf('filthz%1.0f_', this.uiEditFilterHz.get()), ...
+                        sprintf('dt%1.0f', this.uiEditTimeStep.get()) ...
+                    ];
                 case this.cGridAnnular
                     cName = [...
                         'Grid_Annular_', ...
@@ -2395,6 +2559,8 @@ classdef PupilFillGenerator < mic.Base
                     this.buildPanelWaveformSerp();
                 case this.cQUASAR
                     this.buildPanelWaveformQuasar();
+                case this.cGridQuasar
+                    this.buildPanelWaveformGridQuasar();
             end
 
 
@@ -2667,6 +2833,54 @@ classdef PupilFillGenerator < mic.Base
             this.uiEditQuasarPeriod.build(this.hPanelWaveformQuasar, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
             
         end
+        
+        
+        function buildPanelWaveformGridQuasar(this)
+            
+            if ~ishandle(this.hPanelWaveform)
+                return
+            end
+            
+            dLeftCol1 = 10;
+            dLeftCol2 = 100;
+            dEditWidth = 80;
+            dTop = 20;
+            dSep = 40;
+
+            this.hPanelWaveformGridQuasar = uipanel(...
+                'Parent', this.hPanelWaveform,...
+                'Units', 'pixels',...
+                'Title', 'Grid Quasar Config',...
+                'Clipping', 'on',...
+                'Position', mic.Utils.lt2lb([10 65 190 230], this.hPanelWaveform) ...
+            );
+            drawnow;
+            
+            this.uiEditGridQuasarRadiusInner.build(this.hPanelWaveformGridQuasar, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uiEditGridQuasarRadiusOuter.build(this.hPanelWaveformGridQuasar, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
+
+            dTop = dTop + dSep;
+            
+            this.uiEditGridQuasarNumPoles.build(this.hPanelWaveformGridQuasar, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            this.uiEditGridQuasarNumSamples.build(this.hPanelWaveformGridQuasar, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);
+
+            dTop = dTop + dSep;
+            
+            this.uiEditGridQuasarTheta.build(this.hPanelWaveformGridQuasar, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uiEditGridQuasarRot.build(this.hPanelWaveformGridQuasar, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
+
+            dTop = dTop + dSep;
+            
+            this.uiEditGridQuasarOffsetX.build(this.hPanelWaveformGridQuasar, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uiEditGridQuasarOffsetY.build(this.hPanelWaveformGridQuasar, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
+
+            dTop = dTop + dSep;
+            
+            this.uiEditGridQuasarPeriod.build(this.hPanelWaveformGridQuasar, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uiEditGridQuasarVelocityOfStep.build(this.hPanelWaveformGridQuasar, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);
+        end
+        
+        
         
         
         function buildPanelWaveformGridAnnular(this)
