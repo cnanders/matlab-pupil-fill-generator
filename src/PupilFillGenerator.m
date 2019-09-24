@@ -3,7 +3,7 @@ classdef PupilFillGenerator < mic.Base
 
     properties (Constant)
         
-        dPupilScale     = 1.1;
+        dPupilScale     = 1;
         dPupilPixels    = 220;
         
         dWidth          = 1230
@@ -1315,6 +1315,8 @@ classdef PupilFillGenerator < mic.Base
             dY = zeros(1, dRows * dCols);
             dZ = zeros(1, dRows * dCols);
             
+            dZFlip = flipud(this.dIntPupil);
+            
             count = 1;
             % dRows = num of records
             % dCols = num of channels per record
@@ -1323,7 +1325,7 @@ classdef PupilFillGenerator < mic.Base
                 for n = 1 : dCols
                     dX(count) = this.dXPupil(m, n);
                     dY(count) = this.dYPupil(m, n);
-                    dZ(count) = this.dIntPupil(m, n);
+                    dZ(count) = dZFlip(m, n);
                     count = count + 1;
                 end
             end
