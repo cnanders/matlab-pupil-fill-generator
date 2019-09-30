@@ -28,6 +28,7 @@ classdef PupilFillGenerator < mic.Base
         cGridQuasarAsml = 'Grid Quasar (ASML)'
         cGridHexapoleAsml = 'Grid Hexapole (ASML)'
         cGridFromImage = 'Grid From Image'
+        cGridFromProlithSrc = 'Grid From Prolith Src'
     end
     
     properties
@@ -88,6 +89,7 @@ classdef PupilFillGenerator < mic.Base
         hPanelWaveformGridQuasarAsml
         hPanelWaveformGridHexapoleAsml
         hPanelWaveformGridFromImage
+        hPanelWaveformGridFromProlithSrc
         hPanelWaveformGeneral
         hPanelSaved
         
@@ -228,7 +230,11 @@ classdef PupilFillGenerator < mic.Base
         
         uiEditGridFromImageSizeOfGrid
         uiEditGridFromImagePeriod
-
+        
+        uiEditGridFromProlithSrcSizeOfGrid
+        uiEditGridFromProlithSrcPeriod
+        uiEditGridFromProlithSrcVelocityOfStep
+        
         uiEditDCx
         uiEditDCy
         
@@ -543,6 +549,10 @@ classdef PupilFillGenerator < mic.Base
             ...
             'uiEditGridFromImageSizeOfGrid', ...
             'uiEditGridFromImagePeriod', ...
+            ...
+            'uiEditGridFromProlithSrcSizeOfGrid', ...
+            'uiEditGridFromProlithSrcPeriod', ...
+            'uiEditGridFromProlithSrcVelocityOfStep', ...
             ... % dc
              'uiEditDCx', ...
              'uiEditDCy', ...
@@ -641,6 +651,38 @@ classdef PupilFillGenerator < mic.Base
                 'fhDirectCallback', @this.onWaveformProperty); 
             this.uiEditGridFromImagePeriod.setMin(0);
             this.uiEditGridFromImagePeriod.set(300);
+            
+        end
+        
+        
+        function initPanelWaveformGridFromProlithSrc(this)
+                        
+            
+            this.uiEditGridFromProlithSrcSizeOfGrid = mic.ui.common.Edit(...
+                'cLabel', 'Size of Grid', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridFromProlithSrcSizeOfGrid.setMin(0);
+            this.uiEditGridFromProlithSrcSizeOfGrid.setMax(1000);
+            this.uiEditGridFromProlithSrcSizeOfGrid.set(40);
+            
+            this.uiEditGridFromProlithSrcVelocityOfStep = mic.ui.common.Edit(...
+                'cLabel', 'Step Vel (sig / ms)', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridFromProlithSrcVelocityOfStep.setMin(0);
+            this.uiEditGridFromProlithSrcVelocityOfStep.setMax(10);
+            this.uiEditGridFromProlithSrcVelocityOfStep.set(1);
+            
+            
+            this.uiEditGridFromProlithSrcPeriod = mic.ui.common.Edit(...
+                'cLabel', 'Period (ms)', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridFromProlithSrcPeriod.setMin(0);
+            this.uiEditGridFromProlithSrcPeriod.set(300);
             
         end
         
@@ -1317,6 +1359,7 @@ classdef PupilFillGenerator < mic.Base
                     this.cGridHexapoleAsml, ...
                     this.cGridFromImage, ...
                     this.cGridQuasar, ...
+                    this.cGridFromProlithSrc, ...
                  }, ...                
                 'cLabel', 'Type');
             addlistener(this.uipType, 'eChange', @this.onTypeChange);
@@ -1335,6 +1378,7 @@ classdef PupilFillGenerator < mic.Base
             this.initPanelWaveformGridQuasarAsml();
             this.initPanelWaveformGridHexapoleAsml();
             this.initPanelWaveformGridFromImage();
+            this.initPanelWaveformGridFromProlithSrc();
             
             this.uiButtonPreview = mic.ui.common.Button(...
                 'cText', 'Preview');
@@ -1435,25 +1479,28 @@ classdef PupilFillGenerator < mic.Base
             
             [dRows, dCols] = size(this.dXPupil);
             
-            dX = zeros(1, dRows * dCols);
-            dY = zeros(1, dRows * dCols);
-            dZ = zeros(1, dRows * dCols);
+            dX = [];
+            dY = [];
+            dZ = [];
             
             dZFlip = flipud(this.dIntPupil);
+            dZFilp = dZFlip / max(max(dZFlip));
             
-            count = 1;
+            dThreshold = 0.2;
+            
             % dRows = num of records
             % dCols = num of channels per record
             
             for m = 1 : dRows
                 for n = 1 : dCols
-                    dX(count) = this.dXPupil(m, n);
-                    dY(count) = this.dYPupil(m, n);
-                    dZ(count) = dZFlip(m, n);
-                    count = count + 1;
+                    if dZFlip(m, n) > dThreshold
+                        dX(end + 1) = this.dXPupil(m, n);
+                        dY(end + 1) = this.dYPupil(m, n);
+                        dZ(end + 1) = dZFlip(m, n);
+                    end
                 end
             end
-            
+                        
             pupil.x = dX;
             pupil.y = dY;
             pupil.z = dZ;
@@ -1659,6 +1706,13 @@ classdef PupilFillGenerator < mic.Base
                     else
                         this.buildPanelWaveformGridFromImage();
                     end
+               case this.cGridFromProlithSrc
+                    this.hideOtherPanelWaveforms(this.hPanelWaveformGridFromProlithSrc);
+                    if ishandle(this.hPanelWaveformGridFromProlithSrc)
+                        set(this.hPanelWaveformGridFromProlithSrc, 'Visible', 'on');
+                    else
+                        this.buildPanelWaveformGridFromProlithSrc();
+                    end
                     
             end
             
@@ -1697,7 +1751,8 @@ classdef PupilFillGenerator < mic.Base
                 this.hPanelWaveformGridQuasarAsml, ...
                 this.hPanelWaveformGridHexapoleAsml, ...
                 this.hPanelWaveformGridFromImage, ...
-                this.hPanelWaveformGridQuasar ...
+                this.hPanelWaveformGridQuasar, ...
+                this.hPanelWaveformGridFromProlithSrc, ...
             };
             
             % loop through all panels
@@ -2247,6 +2302,31 @@ classdef PupilFillGenerator < mic.Base
                    this.dVx = x;
                    this.dVy = y;
                    this.dTime = t;
+               case this.cGridFromProlithSrc
+                   
+                    
+                    p = PT_read_src(); % asks for src
+                    
+                    x = p.x(:);
+                    y = p.y(:); 
+                    int = p.z(:);
+                    
+                    [x, y, int] = griddedPupilFill.reorderToMinimizeDeltas(x, y, int);
+                    [x, y, t] = griddedPupilFill.getTimeSignals(...
+                        x, ...
+                        y, ...
+                        int, ...
+                        this.uiEditTimeStep.get() * 1e-6, ...
+                        this.uiEditGridFromProlithSrcPeriod.get() * 1e-3, ...
+                        this.uiEditGridFromProlithSrcVelocityOfStep.get() * 1000 ...
+                     );
+                 
+                    x = ScannerCore.lowpass(x, t, this.uiEditFilterHz.get());
+                    y = ScannerCore.lowpass(y, t, this.uiEditFilterHz.get());
+            
+                   this.dVx = x;
+                   this.dVy = y;
+                   this.dTime = t;
                                         
             end
             
@@ -2488,6 +2568,16 @@ classdef PupilFillGenerator < mic.Base
                         'Grid_From_Image_', ...
                         sprintf('sizeOfGrid%1.0f_', this.uiEditGridFromImageSizeOfGrid.get()), ...
                         sprintf('period%1.0f_', this.uiEditGridFromImagePeriod.get()), ...
+                        sprintf('filthz%1.0f_', this.uiEditFilterHz.get()), ...
+                        sprintf('dt%1.0f', this.uiEditTimeStep.get()) ...
+                    ];
+               
+                case this.cGridFromProlithSrc
+                    cName = [...
+                        'Grid_From_Prolith_Src_', ...
+                        sprintf('sizeOfGrid%1.0f_', this.uiEditGridFromProlithSrcSizeOfGrid.get()), ...
+                        sprintf('velocityOfStep%1.0f_', this.uiEditGridFromProlithSrcSizeOfGrid.get()), ...
+                        sprintf('period%1.0f_', this.uiEditGridFromProlithSrcPeriod.get()), ...
                         sprintf('filthz%1.0f_', this.uiEditFilterHz.get()), ...
                         sprintf('dt%1.0f', this.uiEditTimeStep.get()) ...
                     ];
@@ -2980,6 +3070,41 @@ classdef PupilFillGenerator < mic.Base
             dTop = dTop + dSep;
             
             this.uiEditGridFromImagePeriod.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+         end
+        
+         function buildPanelWaveformGridFromProlithSrc(this)
+            
+            if ~ishandle(this.hPanelWaveform)
+                return
+            end
+            
+            dLeftCol1 = 10;
+            dLeftCol2 = 100;
+            dEditWidth = 80;
+            dTop = 20;
+            dSep = 40;
+
+            this.hPanelWaveformGridFromProlithSrc = uipanel(...
+                'Parent', this.hPanelWaveform,...
+                'Units', 'pixels',...
+                'Title', 'Grid From PROLITH .src',...
+                'Clipping', 'on',...
+                'Position', mic.Utils.lt2lb([10 65 190 230], this.hPanelWaveform) ...
+            );
+            drawnow;
+            
+            hPanel = this.hPanelWaveformGridFromProlithSrc;
+            
+            %{
+            this.uiEditGridFromProlithSrcSizeOfGrid.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            dTop = dTop + dSep;
+            %}
+           
+            this.uiEditGridFromProlithSrcVelocityOfStep.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            dTop = dTop + dSep;
+
+            this.uiEditGridFromProlithSrcPeriod.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
             
         end
         
