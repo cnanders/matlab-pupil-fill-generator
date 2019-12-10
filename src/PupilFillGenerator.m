@@ -2311,6 +2311,12 @@ classdef PupilFillGenerator < mic.Base
                     y = p.y(:); 
                     int = p.z(:);
                     
+                    % kill anything that is very low intentisy
+                    indexLow = int < 0.02;
+                    x(indexLow) = [];
+                    y(indexLow) = [];
+                    int(indexLow) = [];
+                    
                     [x, y, int] = griddedPupilFill.reorderToMinimizeDeltas(x, y, int);
                     [x, y, t] = griddedPupilFill.getTimeSignals(...
                         x, ...
