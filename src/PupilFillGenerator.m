@@ -2650,6 +2650,7 @@ classdef PupilFillGenerator < mic.Base
             
             % Update the mic.ui.common.ListDir
             this.uiListDirSaved.refresh();
+            this.uiListDirSaved.setSelectedIndexes(uint8(1));
                        
         end
         
