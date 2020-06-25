@@ -535,6 +535,17 @@ classdef PupilFillGenerator < mic.Base
             'uiEditGridAnnularRadius2', ...
             'uiEditGridAnnularSizeOfGrid', ...
             'uiEditGridAnnularPeriod', ...
+            ... grid quasar
+            'uiEditGridQuasarRadiusInner', ...
+            'uiEditGridQuasarRadiusOuter', ...
+            'uiEditGridQuasarNumSamples', ...
+            'uiEditGridQuasarNumPoles', ...
+            'uiEditGridQuasarTheta', ...
+            'uiEditGridQuasarPeriod', ...
+            'uiEditGridQuasarRot', ...
+            'uiEditGridQuasarOffsetX', ...
+            'uiEditGridQuasarOffsetY', ...
+            'uiEditGridQuasarVelocityOfStep', ... 
             ...
             'uiEditGridDipoleAsmlOffset', ...
             'uiEditGridDipoleAsmlRotation', ...
@@ -593,6 +604,7 @@ classdef PupilFillGenerator < mic.Base
             for n = 1 : length(cecProps)
                 cProp = cecProps{n};
                if isfield(st, cProp)
+                %fprintf('matlab-pupil-fill-generator loadPanelWaveformState() loading %s\n', cProp);
                	this.(cProp).load(st.(cProp))
                end
             end            
@@ -2492,7 +2504,8 @@ classdef PupilFillGenerator < mic.Base
                 xlim(this.hAxis1D, [0 max(this.dTime*1000)])
                 ylim(this.hAxis1D, [-1 1])
             else
-            	fprintf('PupilFillGenerator updateAxes() returning since hPanel, hAxis2D or hAxis1D not handle\n');                
+                cMsg = 'returning since hPanel, hAxis2D or hAxis1D not handle';
+            	this.msg(cMsg, this.u8_MSG_TYPE_INFO);                
             end
             
         end
@@ -2775,6 +2788,7 @@ classdef PupilFillGenerator < mic.Base
             
             % Update the mic.ui.common.ListDir
             this.uiListDirSaved.refresh();
+            this.uiListDirSaved.setSelectedIndexes(uint8(1));
                        
         end
         
@@ -3633,7 +3647,8 @@ classdef PupilFillGenerator < mic.Base
                 ishandle(this.hAxis2DSim)
                 % Proceed
             else
-                fprintf('PupilFillGenerator updatePupilImg() returning since hPanel, hAxis2DSim not handle\n');                
+                cMsg = 'returning since hPanel, hAxis2DSim not handle';
+                this.msg(cMsg, this.u8_MSG_TYPE_INFO);             
                 return;
             end
                     
@@ -3707,8 +3722,8 @@ classdef PupilFillGenerator < mic.Base
 
             hParent = this.hAxis2DSim;
                 
-            imagesc(int, 'Parent', hParent)
-            axis(hParent, 'image')
+            imagesc(int, 'Parent', hParent);
+            axis(hParent, 'image');
             colormap(hParent, 'jet');
             
             if this.lSerpentineDebug
@@ -3725,7 +3740,7 @@ classdef PupilFillGenerator < mic.Base
                 imagesc(dX(:, 1)*dMmPerSig, dY(1, :)*dMmPerSig, dKernelInt, ...
                     'Parent', this.hSerpentineKernelAxes ...
                 )
-                axis(this.hSerpentineKernelAxes, 'image')
+                axis(this.hSerpentineKernelAxes, 'image');
                 colormap(this.hSerpentineKernelAxes, 'jet');
                 xlabel(this.hSerpentineKernelAxes, 'x (mm)');
                 ylabel(this.hSerpentineKernelAxes, 'y (mm)');
@@ -3734,9 +3749,9 @@ classdef PupilFillGenerator < mic.Base
                 plot(this.dVx*dMmPerVolts, this.dVy*dMmPerVolts, 'b', ...
                     'Parent', this.hSerpentineWaveformAxes ...
                 );
-                axis(this.hSerpentineWaveformAxes, 'image')
-                xlim(this.hSerpentineWaveformAxes, [-1 1]*dMmPerVolts)
-                ylim(this.hSerpentineWaveformAxes, [-1 1]*dMmPerVolts)
+                axis(this.hSerpentineWaveformAxes, 'image');
+                xlim(this.hSerpentineWaveformAxes, [-1 1]*dMmPerVolts);
+                ylim(this.hSerpentineWaveformAxes, [-1 1]*dMmPerVolts);
                 xlabel(this.hSerpentineWaveformAxes, 'x (mm)');
                 ylabel(this.hSerpentineWaveformAxes, 'y (mm)');
                 
@@ -3745,7 +3760,7 @@ classdef PupilFillGenerator < mic.Base
                 imagesc(dX(:, 1)*dMmPerSig, dY(1, :)*dMmPerSig, int, ...
                     'Parent', this.hSerpentineConvAxes ...
                 )
-                axis(this.hSerpentineConvAxes, 'image')
+                axis(this.hSerpentineConvAxes, 'image');
                 colormap(this.hSerpentineConvAxes, 'jet');
                 xlabel(this.hSerpentineConvAxes, 'x (mm)');
                 ylabel(this.hSerpentineConvAxes, 'y (mm)');
@@ -3780,7 +3795,7 @@ classdef PupilFillGenerator < mic.Base
                     'Parent', this.hSerpentineConvOutputAxes ...
                 )
                 %}
-                axis(this.hSerpentineConvOutputAxes, 'image')
+                axis(this.hSerpentineConvOutputAxes, 'image');
                 colormap(this.hSerpentineConvOutputAxes, 'jet');
                 xlabel(this.hSerpentineConvOutputAxes, 'x (mm)');
                 ylabel(this.hSerpentineConvOutputAxes, 'y (mm)');
