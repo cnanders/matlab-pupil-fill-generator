@@ -24,6 +24,7 @@ classdef PupilFillGenerator < mic.Base
         cSERPENTINE = 'Serpentine'
         cGridAnnular = 'Grid Annular'
         cGridDipoleAsml = 'Grid Dipole (ASML)'
+        cGridDipole2 = 'Grid Dipole 2'
         cGridQuadrupoleAsml = 'Grid Quadrupole (ASML)'
         cGridQuadrupole2 = 'Grid Quadrupole 2'
         cGridQuasarAsml = 'Grid Quasar (ASML)'
@@ -92,6 +93,7 @@ classdef PupilFillGenerator < mic.Base
         hPanelWaveformGridFromImage
         hPanelWaveformGridFromProlithSrc
         hPanelWaveformGridQuadrupole2
+        hPanelWaveformGridDipole2
         hPanelWaveformGeneral
         hPanelSaved
         
@@ -234,10 +236,17 @@ classdef PupilFillGenerator < mic.Base
         uiEditGridQuadrupole2SigmaOuterStop
         uiEditGridQuadrupole2SigmaOfCenterOfOuterRings
         uiEditGridQuadrupole2SigmaOfOuterRings
-
         uiEditGridQuadrupole2Rotation
         uiEditGridQuadrupole2SizeOfGrid
         uiEditGridQuadrupole2Period
+        
+        
+        uiEditGridDipole2SigmaOuterStop
+        uiEditGridDipole2SigmaOfCenterOfOuterRings
+        uiEditGridDipole2SigmaOfOuterRings
+        uiEditGridDipole2Rotation
+        uiEditGridDipole2SizeOfGrid
+        uiEditGridDipole2Period
         
         
         uiEditGridFromImageSizeOfGrid
@@ -577,6 +586,13 @@ classdef PupilFillGenerator < mic.Base
             'uiEditGridQuadrupole2Rotation', ...
             'uiEditGridQuadrupole2SizeOfGrid', ...
             'uiEditGridQuadrupole2Period', ...
+            ...
+            'uiEditGridDipole2SigmaOuterStop', ...
+            'uiEditGridDipole2SigmaOfCenterOfOuterRings', ...
+            'uiEditGridDipole2SigmaOfOuterRings', ...
+            'uiEditGridDipole2Rotation', ...
+            'uiEditGridDipole2SizeOfGrid', ...
+            'uiEditGridDipole2Period', ...
             ...
             'uiEditGridFromImageSizeOfGrid', ...
             'uiEditGridFromImagePeriod', ...
@@ -976,6 +992,66 @@ classdef PupilFillGenerator < mic.Base
                 'fhDirectCallback', @this.onWaveformProperty); 
             this.uiEditGridQuadrupole2Period.setMin(0);
             this.uiEditGridQuadrupole2Period.set(300);
+            
+        end
+        
+        function initPanelWaveformGridDipole2(this)
+            
+            
+            this.uiEditGridDipole2SigmaOuterStop = mic.ui.common.Edit(...
+                'cLabel', 'Sig Outer Stop', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridDipole2SigmaOuterStop.set(0.95);
+            this.uiEditGridDipole2SigmaOuterStop.setMin(0);
+            this.uiEditGridDipole2SigmaOuterStop.setMax(2);
+            
+            this.uiEditGridDipole2SigmaOfCenterOfOuterRings = mic.ui.common.Edit(...
+                'cLabel', 'Sig Offset Center', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridDipole2SigmaOfCenterOfOuterRings.set(0.65 + 0.9);
+            this.uiEditGridDipole2SigmaOfCenterOfOuterRings.setMin(0);
+            this.uiEditGridDipole2SigmaOfCenterOfOuterRings.setMax(2);
+            
+            
+            this.uiEditGridDipole2SigmaOfOuterRings = mic.ui.common.Edit(...
+                'cLabel', 'Sig of Rings', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridDipole2SigmaOfOuterRings.set(0.9);
+            this.uiEditGridDipole2SigmaOfOuterRings.setMin(0);
+            this.uiEditGridDipole2SigmaOfOuterRings.setMax(2);
+            
+            this.uiEditGridDipole2Rotation = mic.ui.common.Edit(...
+                'cLabel', 'Rotation', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridDipole2Rotation.setMin(0);
+            this.uiEditGridDipole2Rotation.setMax(360);
+            this.uiEditGridDipole2Rotation.set(0);
+            
+                        
+            this.uiEditGridDipole2SizeOfGrid = mic.ui.common.Edit(...
+                'cLabel', 'Size of Grid', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty ...
+            ); 
+            this.uiEditGridDipole2SizeOfGrid.setMin(0);
+            this.uiEditGridDipole2SizeOfGrid.setMax(1000);
+            this.uiEditGridDipole2SizeOfGrid.set(40);
+            
+            
+            this.uiEditGridDipole2Period = mic.ui.common.Edit(...
+                'cLabel', 'Period (ms)', ...
+                'cType', 'd', ...
+                'fhDirectCallback', @this.onWaveformProperty); 
+            this.uiEditGridDipole2Period.setMin(0);
+            this.uiEditGridDipole2Period.set(300);
             
         end
         
@@ -1459,6 +1535,7 @@ classdef PupilFillGenerator < mic.Base
                     this.cGridQuasar, ...
                     this.cGridFromProlithSrc, ...
                     this.cGridQuadrupole2, ...
+                    this.cGridDipole2, ...
                  }, ...                
                 'cLabel', 'Type');
             addlistener(this.uipType, 'eChange', @this.onTypeChange);
@@ -1479,7 +1556,7 @@ classdef PupilFillGenerator < mic.Base
             this.initPanelWaveformGridFromImage();
             this.initPanelWaveformGridFromProlithSrc();
             this.initPanelWaveformGridQuadrupole2();
-
+            this.initPanelWaveformGridDipole2();
             
             this.uiButtonPreview = mic.ui.common.Button(...
                 'cText', 'Preview');
@@ -1807,6 +1884,13 @@ classdef PupilFillGenerator < mic.Base
                     else
                         this.buildPanelWaveformGridQuadrupole2();
                     end
+               case this.cGridDipole2
+                    this.hideOtherPanelWaveforms(this.hPanelWaveformGridDipole2);
+                    if ishandle(this.hPanelWaveformGridDipole2)
+                        set(this.hPanelWaveformGridDipole2, 'Visible', 'on');
+                    else
+                        this.buildPanelWaveformGridDipole2();
+                    end
                case this.cGridFromImage
                     this.hideOtherPanelWaveforms(this.hPanelWaveformGridFromImage);
                     if ishandle(this.hPanelWaveformGridFromImage)
@@ -1861,7 +1945,9 @@ classdef PupilFillGenerator < mic.Base
                 this.hPanelWaveformGridFromImage, ...
                 this.hPanelWaveformGridQuasar, ...
                 this.hPanelWaveformGridFromProlithSrc, ...
-                this.hPanelWaveformGridQuadrupole2
+                this.hPanelWaveformGridQuadrupole2, ...
+                this.hPanelWaveformGridDipole2
+
             };
             
             % loop through all panels
@@ -2416,7 +2502,31 @@ classdef PupilFillGenerator < mic.Base
                    this.dVx = x;
                    this.dVy = y;
                    this.dTime = t;
+               
+              case this.cGridDipole2
                    
+                    [x, y, int] = griddedPupilFill.getDipole2(...
+                        'sigmaOfOuterStop', this.uiEditGridDipole2SigmaOuterStop.get(), ...
+                        'sigmaOfCenterOfOuterRings', this.uiEditGridDipole2SigmaOfCenterOfOuterRings.get(), ...
+                        'sigmaOfOuterRings', this.uiEditGridDipole2SigmaOfOuterRings.get(), ...
+                        'rotation', this.uiEditGridDipole2Rotation.get(), ...
+                        'numOfSamples', this.uiEditGridDipole2SizeOfGrid.get() ...
+                    );
+                    [x, y, int] = griddedPupilFill.reorderToMinimizeDeltas(x, y, int);
+                    [x, y, t] = griddedPupilFill.getTimeSignals(...
+                        x, ...
+                        y, ...
+                        int, ...
+                        this.uiEditTimeStep.get() * 1e-6, ...
+                        this.uiEditGridDipole2Period.get() * 1e-3 ...
+                     );
+                 
+                    x = ScannerCore.lowpass(x, t, this.uiEditFilterHz.get());
+                    y = ScannerCore.lowpass(y, t, this.uiEditFilterHz.get());
+            
+                   this.dVx = x;
+                   this.dVy = y;
+                   this.dTime = t;
                case this.cGridFromImage
                    
                     [x, y, int] = griddedPupilFill.getFromImage(...
@@ -2718,7 +2828,19 @@ classdef PupilFillGenerator < mic.Base
                         sprintf('dt%1.0f', this.uiEditTimeStep.get()) ...
                     ];
                 
-                
+               case this.cGridDipole2
+                    cName = [...
+                        'Grid_Dipole_2_', ...
+                        sprintf('sigmaOutStop_%1.0f_', this.uiEditGridDipole2SigmaOuterStop.get() * 100)...
+                        sprintf('sigmaOffset_%1.0f_', this.uiEditGridDipole2SigmaOfCenterOfOuterRings.get() * 100)...
+                        sprintf('sigmaRings_%1.0f_', this.uiEditGridDipole2SigmaOfOuterRings.get() * 100)...
+                        sprintf('rotation%1.0f_', this.uiEditGridDipole2Rotation.get()), ...
+                        sprintf('sizeOfGrid%1.0f_', this.uiEditGridDipole2SizeOfGrid.get()), ...
+                        sprintf('period%1.0f_', this.uiEditGridDipole2Period.get()), ...
+                        sprintf('filthz%1.0f_', this.uiEditFilterHz.get()), ...
+                        sprintf('dt%1.0f', this.uiEditTimeStep.get()) ...
+                    ];
+                 
                case this.cGridFromImage
                     cName = [...
                         'Grid_From_Image_', ...
@@ -3478,6 +3600,51 @@ classdef PupilFillGenerator < mic.Base
             
         end
         
+        
+        function buildPanelWaveformGridDipole2(this)
+            
+            if ~ishandle(this.hPanelWaveform)
+                return
+            end
+            
+            dLeftCol1 = 10;
+            dLeftCol2 = 100;
+            dEditWidth = 80;
+            dTop = 20;
+            dSep = 40;
+
+            this.hPanelWaveformGridDipole2 = uipanel(...
+                'Parent', this.hPanelWaveform,...
+                'Units', 'pixels',...
+                'Title', 'Grid Dipole 2 Config',...
+                'Clipping', 'on',...
+                'Position', mic.Utils.lt2lb([10 65 190 230], this.hPanelWaveform) ...
+            );
+            drawnow;
+            
+            hPanel = this.hPanelWaveformGridDipole2;
+            
+            this.uiEditGridDipole2SigmaOuterStop.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            
+            dTop = dTop + dSep;
+            this.uiEditGridDipole2SigmaOfCenterOfOuterRings.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uiEditGridDipole2SigmaOfOuterRings.build(hPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);
+            
+            dTop = dTop + dSep;
+            
+            this.uiEditGridDipole2Rotation.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+            dTop = dTop + dSep;
+            
+            this.uiEditGridDipole2SizeOfGrid.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+            
+            dTop = dTop + dSep;
+            
+            this.uiEditGridDipole2Period.build(hPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            
+        end
+
         function buildPanelWaveformSerp(this)
             
             if ~ishandle(this.hPanelWaveform)
