@@ -4083,14 +4083,25 @@ classdef PupilFillGenerator < mic.Base
         
         function [out] = gauss(this, x, sigx, y, sigy)
 
+            power = 12;
+            
             if nargin == 5
-                out = exp(-((x/sigx).^2/2+(y/sigy).^2/2)); 
+                
+                r = sqrt(x.^2 + y.^2);
+                sig = sqrt(sigx.^2 + sigy.^2);
+                
+                % x y
+                %out = exp(-((x/sigx).^power/2+(y/sigy).^power/2));
+                
+                % azimuthal symmetric
+                out = exp(-((r/sig).^power/2));
+
             elseif nargin == 4;
                 disp('Must input x,sigx,y,sigy in ''gauss'' function')
             elseif nargin == 3;
-                out = exp(-x.^2/2/sigx^2);
+                out = exp(-x.^power/2/sigx^power);
             elseif nargin == 12;
-                out = exp(-x.^2/2);
+                out = exp(-x.^power/2);
             end
             
         end
